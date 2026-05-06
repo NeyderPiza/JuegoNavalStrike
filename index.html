@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NAVAL STRIKE — Hundir la Flota</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- ══════════════ MENÚ PRINCIPAL ══════════════ -->
+<section id="screen-menu" class="screen active">
+  <div class="menu-bg" aria-hidden="true">
+    <div class="sonar-ring r1"></div><div class="sonar-ring r2"></div>
+    <div class="sonar-ring r3"></div><div class="sonar-ring r4"></div>
+    <div class="sonar-sweep"></div>
+    <div class="bg-grid"></div>
+  </div>
+
+  <div class="menu-layout">
+    <!-- COLUMNA IZQUIERDA -->
+    <div class="menu-left">
+      <header class="menu-logo">
+        <div class="logo-eyebrow">— TACTICAL WARFARE —</div>
+        <h1 class="logo-title">NAVAL<br/><em class="logo-accent">STRIKE</em></h1>
+        <div class="logo-sub">HUNDIR LA FLOTA · EDICIÓN TÁCTICA</div>
+      </header>
+
+      <nav class="menu-nav">
+        <button class="btn-play" id="btn-1p">
+          <span class="bp-icon">◈</span>
+          <span class="bp-body"><strong>1 JUGADOR</strong><small>vs Inteligencia Artificial</small></span>
+          <span class="bp-arrow">›</span>
+        </button>
+        <button class="btn-play outlined" id="btn-2p">
+          <span class="bp-icon">◉</span>
+          <span class="bp-body"><strong>2 JUGADORES</strong><small>Local · Pass &amp; Play</small></span>
+          <span class="bp-arrow">›</span>
+        </button>
+      </nav>
+
+      <div class="fleet-preview" aria-label="Flota">
+        <div class="fp-row"><div class="fp-ship s5"></div><span class="fp-name">Portaaviones <em>×5</em></span></div>
+        <div class="fp-row"><div class="fp-ship s4"></div><span class="fp-name">Acorazado <em>×4</em></span></div>
+        <div class="fp-row"><div class="fp-ship s3"></div><span class="fp-name">Crucero <em>×3</em></span></div>
+        <div class="fp-row"><div class="fp-ship s3 alt"></div><span class="fp-name">Submarino <em>×3</em></span></div>
+        <div class="fp-row"><div class="fp-ship s2"></div><span class="fp-name">Destructor <em>×2</em></span></div>
+      </div>
+    </div>
+
+    <!-- COLUMNA DERECHA -->
+    <div class="menu-right">
+
+      <div class="info-panel">
+        <div class="info-head"><span class="info-dot"></span>ESPECIFICACIONES</div>
+        <div class="specs-list">
+          <div class="spec-row"><span class="sk">TABLERO</span><span class="sv">10 × 10 casillas (100 celdas)</span></div>
+          <div class="spec-row"><span class="sk">BARCOS</span><span class="sv">5 embarcaciones · 17 casillas</span></div>
+          <div class="spec-row"><span class="sk">OBJETIVO</span><span class="sv">Hundir toda la flota enemiga</span></div>
+          <div class="spec-row"><span class="sk">ACIERTO</span><span class="sv">Turno extra para el atacante</span></div>
+          <div class="spec-row"><span class="sk">FALLO</span><span class="sv">Turno pasa al rival</span></div>
+          <div class="spec-row"><span class="sk">IA</span><span class="sv">Modo Caza + Persecución activa</span></div>
+          <div class="spec-row"><span class="sk">2 JUGADORES</span><span class="sv">Pass &amp; Play · pantalla oculta</span></div>
+          <div class="spec-row"><span class="sk">TECH</span><span class="sv">Vanilla JS · Sin librerías · Offline</span></div>
+        </div>
+      </div>
+
+      <div class="info-panel">
+        <div class="info-head"><span class="info-dot cyan"></span>CONTROLES</div>
+        <div class="ctrl-section">POSICIONAMIENTO</div>
+        <div class="ctrl-row"><kbd>Clic</kbd> en barco<span>Seleccionar embarcación</span></div>
+        <div class="ctrl-row"><kbd>Clic</kbd> en tablero<span>Colocar barco seleccionado</span></div>
+        <div class="ctrl-row"><kbd>R</kbd><span>Rotar barco (horizontal ↔ vertical)</span></div>
+        <div class="ctrl-row"><kbd>⚄ Aleatorio</kbd><span>Posicionamiento automático</span></div>
+        <div class="ctrl-row"><kbd>✕ Limpiar</kbd><span>Retirar todos los barcos</span></div>
+        <div class="ctrl-section" style="margin-top:.8rem">COMBATE</div>
+        <div class="ctrl-row"><kbd>Clic</kbd> en radar<span>Disparar a coordenada</span></div>
+        <div class="ctrl-row"><span class="ldot hit"></span><span><b style="color:var(--orange)">Naranja</b> = Impacto directo</span></div>
+        <div class="ctrl-row"><span class="ldot miss"></span><span><b style="color:var(--cyan)">Azul</b> = Agua · disparo fallado</span></div>
+        <div class="ctrl-row"><span class="ldot sunk"></span><span><b style="color:var(--red)">Rojo</b> = Barco hundido</span></div>
+      </div>
+
+      <div class="info-panel">
+        <div class="info-head"><span class="info-dot orange"></span>FLOTA DE COMBATE</div>
+        <table class="fleet-table">
+          <thead><tr><th>EMBARCACIÓN</th><th>VISUAL</th><th>CELDAS</th></tr></thead>
+          <tbody>
+            <tr><td>Portaaviones</td><td><div class="ft-ship s5"></div></td><td>5</td></tr>
+            <tr><td>Acorazado</td>  <td><div class="ft-ship s4"></div></td><td>4</td></tr>
+            <tr><td>Crucero</td>    <td><div class="ft-ship s3"></div></td><td>3</td></tr>
+            <tr><td>Submarino</td>  <td><div class="ft-ship s3 alt"></div></td><td>3</td></tr>
+            <tr><td>Destructor</td> <td><div class="ft-ship s2"></div></td><td>2</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+  <footer class="menu-footer">NAVAL STRIKE &nbsp;·&nbsp; Grid 10×10 &nbsp;·&nbsp; 5 Barcos &nbsp;·&nbsp; IA Táctica &nbsp;·&nbsp; 100% Offline</footer>
+</section>
+
+
+<!-- ══════════════ POSICIONAMIENTO ══════════════ -->
+<section id="screen-placement" class="screen">
+  <header class="game-header">
+    <button class="btn-back" id="back-from-placement">‹ MENÚ</button>
+    <h2 class="screen-title" id="placement-title">POSICIONAR FLOTA</h2>
+    <div class="player-badge" id="placement-player-badge">JUGADOR 1</div>
+  </header>
+
+  <div class="placement-layout">
+    <aside class="ship-panel">
+      <div class="panel-title">⛵ FLOTA DISPONIBLE</div>
+      <ul class="ship-list" id="ship-list"></ul>
+      <div class="ship-controls">
+        <button class="btn-ctrl" id="btn-rotate"><span id="rotate-icon">↻</span> ROTAR <kbd>R</kbd></button>
+        <button class="btn-ctrl accent" id="btn-random">⚄ ALEATORIO</button>
+        <button class="btn-ctrl danger" id="btn-clear">✕ LIMPIAR</button>
+      </div>
+      <div class="hint-box">
+        <span class="hint-icon">💡</span>
+        <span id="hint-text">Selecciona un barco y haz clic en el tablero para colocarlo</span>
+      </div>
+      <div class="pp-wrap">
+        <div class="pp-labels"><span>COLOCADOS</span><span id="progress-count">0 / 5</span></div>
+        <div class="pp-track"><div class="pp-fill" id="progress-bar" style="width:0%"></div></div>
+      </div>
+    </aside>
+
+    <div class="board-container">
+      <div class="orient-badge" id="orient-badge">→ HORIZONTAL</div>
+      <div class="board-frame">
+        <div class="board-col-labels">
+          <div class="lbl-corner"></div>
+          <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span>
+          <span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
+        </div>
+        <div class="board-body">
+          <div class="board-row-labels">
+            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+            <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+          </div>
+          <div class="board" id="placement-board"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="placement-footer">
+    <span class="pf-status" id="pf-status">Coloca todos los barcos para continuar</span>
+    <button class="btn-ready" id="btn-ready" disabled>⚡ LISTO PARA COMBATE ›</button>
+  </div>
+</section>
+
+
+<!-- ══════════════ HANDOFF (2P) ══════════════ -->
+<section id="screen-handoff" class="screen">
+  <div class="handoff-wrap">
+    <div class="handoff-shield">🛡️</div>
+    <div class="handoff-eyebrow">PASA EL DISPOSITIVO A</div>
+    <h2 class="handoff-name" id="handoff-player-name">JUGADOR 2</h2>
+    <p class="handoff-desc" id="handoff-desc">El tablero anterior ha sido ocultado.<br/>Pulsa cuando estés listo.</p>
+    <div class="handoff-warn">⚠ No mires la pantalla del rival</div>
+    <button class="btn-play" id="btn-handoff-ready">
+      <span class="bp-icon">◈</span>
+      <span class="bp-body"><strong>ESTOY LISTO</strong><small>Continuar al juego</small></span>
+      <span class="bp-arrow">›</span>
+    </button>
+  </div>
+</section>
+
+
+<!-- ══════════════ BATALLA ══════════════ -->
+<section id="screen-battle" class="screen">
+  <header class="battle-header">
+    <div class="bh-turn">
+      <div class="turn-dot" id="turn-dot"></div>
+      <div>
+        <div class="turn-lbl">TURNO ACTUAL</div>
+        <div class="turn-name" id="turn-player-name">JUGADOR 1</div>
+      </div>
+    </div>
+    <div class="bh-score">
+      <div class="sc-item"><div class="sc-val" id="stat-hits">0</div><div class="sc-lbl">IMPACTOS</div></div>
+      <div class="sc-sep"></div>
+      <div class="sc-item"><div class="sc-val" id="stat-misses">0</div><div class="sc-lbl">FALLOS</div></div>
+      <div class="sc-sep"></div>
+      <div class="sc-item"><div class="sc-val" id="stat-sunk">0</div><div class="sc-lbl">HUNDIDOS</div></div>
+    </div>
+    <button class="btn-surrender" id="btn-surrender">⚑ RENDIRSE</button>
+  </header>
+
+  <div class="battle-tabs">
+    <button class="tab-btn active" id="tab-enemy">⊕ ATAQUE</button>
+    <button class="tab-btn" id="tab-own">◉ DEFENSA</button>
+  </div>
+
+  <div class="battle-arena">
+    <!-- Tablero enemigo -->
+    <div class="arena-panel" id="container-enemy">
+      <div class="ap-head">
+        <div class="ap-head-l">
+          <span class="ap-icon enemy-icon">⊕</span>
+          <div><div class="ap-title">RADAR ENEMIGO</div><div class="ap-sub">Clic para disparar</div></div>
+        </div>
+        <div class="ap-badge enemy-badge"><span id="enemy-ships-left">5</span> activos</div>
+      </div>
+      <div class="board-frame">
+        <div class="board-col-labels">
+          <div class="lbl-corner"></div>
+          <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span>
+          <span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
+        </div>
+        <div class="board-body">
+          <div class="board-row-labels">
+            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+            <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+          </div>
+          <div class="board enemy-board" id="enemy-board"></div>
+        </div>
+      </div>
+      <div class="fleet-tracker" id="enemy-fleet-tracker"></div>
+    </div>
+
+    <div class="arena-divider"><div class="ad-line"></div><div class="ad-anchor">⚓</div><div class="ad-line"></div></div>
+
+    <!-- Tablero propio -->
+    <div class="arena-panel" id="container-own">
+      <div class="ap-head">
+        <div class="ap-head-l">
+          <span class="ap-icon own-icon">◉</span>
+          <div><div class="ap-title">MI FLOTA</div><div class="ap-sub">Zona de defensa</div></div>
+        </div>
+        <div class="ap-badge own-badge"><span id="own-ships-left">5</span> activos</div>
+      </div>
+      <div class="board-frame">
+        <div class="board-col-labels">
+          <div class="lbl-corner"></div>
+          <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span>
+          <span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
+        </div>
+        <div class="board-body">
+          <div class="board-row-labels">
+            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+            <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+          </div>
+          <div class="board own-board" id="own-board"></div>
+        </div>
+      </div>
+      <div class="fleet-tracker" id="own-fleet-tracker"></div>
+    </div>
+  </div>
+
+  <div class="battle-log">
+    <span class="log-icon" id="log-icon">📡</span>
+    <span class="log-text" id="battle-message">Haz clic en el radar enemigo para disparar</span>
+  </div>
+</section>
+
+
+<!-- ══════════════ FIN DE JUEGO ══════════════ -->
+<section id="screen-gameover" class="screen">
+  <div class="go-particles" aria-hidden="true">
+    <div class="gop p1"></div><div class="gop p2"></div>
+    <div class="gop p3"></div><div class="gop p4"></div>
+  </div>
+  <div class="go-card">
+    <div class="go-emblem" id="go-emblem">🏆</div>
+    <div class="go-eyebrow" id="go-eyebrow">— VICTORIA —</div>
+    <h2 class="go-title" id="go-title">¡Misión Cumplida!</h2>
+    <p class="go-desc" id="go-desc">Has hundido toda la flota enemiga.</p>
+    <div class="go-stats" id="go-stats"></div>
+    <div class="go-actions">
+      <button class="btn-play" id="btn-play-again">
+        <span class="bp-icon">↺</span>
+        <span class="bp-body"><strong>JUGAR DE NUEVO</strong><small>Misma configuración</small></span>
+        <span class="bp-arrow">›</span>
+      </button>
+      <button class="btn-back-wide" id="btn-main-menu">‹ MENÚ PRINCIPAL</button>
+    </div>
+  </div>
+</section>
+
+
+<!-- Toasts -->
+<div id="toast-container" aria-live="polite"></div>
+
+<!-- Explosión overlay -->
+<div id="exp-overlay" class="exp-overlay" aria-hidden="true">
+  <div class="exp-ring er1"></div>
+  <div class="exp-ring er2"></div>
+  <div class="exp-ring er3"></div>
+  <div class="exp-text" id="exp-text">¡HUNDIDO!</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
