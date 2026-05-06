@@ -529,167 +529,168 @@ kbd {
 
 /* ───────────────────────────────────────────────────────────────
    SHIPS WITH IMAGES — Image spans all cells, no distortion
+   ONLY in placement and own-board, NOT in enemy-board
    ─────────────────────────────────────────────────────────────── */
 
 /* PORTAAVIONES (5 celdas) */
-.cell.ship[data-ship-type="carrier"][data-ship-vertical="true"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="carrier"][data-ship-vertical="true"] {
   background: url('../images/PortaAvionesVertical.png') no-repeat !important;
   background-size: 100% 500% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
-.cell.ship[data-ship-type="carrier"][data-ship-vertical="false"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="carrier"][data-ship-vertical="false"] {
   background: url('../images/PortaAvionesHorizontal.png') no-repeat !important;
   background-size: 500% 100% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
-.cell.ship[data-ship-type="carrier"][data-ship-vertical="true"][data-ship-index="0"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="carrier"][data-ship-vertical="true"][data-ship-index="0"] {
   background-position: center 0% !important;
 }
-.cell.ship[data-ship-type="carrier"][data-ship-vertical="true"][data-ship-index="1"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="carrier"][data-ship-vertical="true"][data-ship-index="1"] {
   background-position: center 25% !important;
 }
-.cell.ship[data-ship-type="carrier"][data-ship-vertical="true"][data-ship-index="2"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="carrier"][data-ship-vertical="true"][data-ship-index="2"] {
   background-position: center 50% !important;
 }
-.cell.ship[data-ship-type="carrier"][data-ship-vertical="true"][data-ship-index="3"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="carrier"][data-ship-vertical="true"][data-ship-index="3"] {
   background-position: center 75% !important;
 }
-.cell.ship[data-ship-type="carrier"][data-ship-vertical="true"][data-ship-index="4"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="carrier"][data-ship-vertical="true"][data-ship-index="4"] {
   background-position: center 100% !important;
 }
-.cell.ship[data-ship-type="carrier"][data-ship-vertical="false"][data-ship-index="0"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="carrier"][data-ship-vertical="false"][data-ship-index="0"] {
   background-position: 0% center !important;
 }
-.cell.ship[data-ship-type="carrier"][data-ship-vertical="false"][data-ship-index="1"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="carrier"][data-ship-vertical="false"][data-ship-index="1"] {
   background-position: 25% center !important;
 }
-.cell.ship[data-ship-type="carrier"][data-ship-vertical="false"][data-ship-index="2"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="carrier"][data-ship-vertical="false"][data-ship-index="2"] {
   background-position: 50% center !important;
 }
-.cell.ship[data-ship-type="carrier"][data-ship-vertical="false"][data-ship-index="3"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="carrier"][data-ship-vertical="false"][data-ship-index="3"] {
   background-position: 75% center !important;
 }
-.cell.ship[data-ship-type="carrier"][data-ship-vertical="false"][data-ship-index="4"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="carrier"][data-ship-vertical="false"][data-ship-index="4"] {
   background-position: 100% center !important;
 }
 
 /* ACORAZADO (4 celdas) */
-.cell.ship[data-ship-type="battleship"][data-ship-vertical="true"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="battleship"][data-ship-vertical="true"] {
   background: url('../images/AcorazadoVertical.png') no-repeat !important;
   background-size: 100% 400% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
-.cell.ship[data-ship-type="battleship"][data-ship-vertical="false"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="battleship"][data-ship-vertical="false"] {
   background: url('../images/AcorazadoHorizontal.png') no-repeat !important;
   background-size: 400% 100% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
-.cell.ship[data-ship-type="battleship"][data-ship-vertical="true"][data-ship-index="0"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="battleship"][data-ship-vertical="true"][data-ship-index="0"] {
   background-position: center 0% !important;
 }
-.cell.ship[data-ship-type="battleship"][data-ship-vertical="true"][data-ship-index="1"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="battleship"][data-ship-vertical="true"][data-ship-index="1"] {
   background-position: center 33.333% !important;
 }
-.cell.ship[data-ship-type="battleship"][data-ship-vertical="true"][data-ship-index="2"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="battleship"][data-ship-vertical="true"][data-ship-index="2"] {
   background-position: center 66.666% !important;
 }
-.cell.ship[data-ship-type="battleship"][data-ship-vertical="true"][data-ship-index="3"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="battleship"][data-ship-vertical="true"][data-ship-index="3"] {
   background-position: center 100% !important;
 }
-.cell.ship[data-ship-type="battleship"][data-ship-vertical="false"][data-ship-index="0"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="battleship"][data-ship-vertical="false"][data-ship-index="0"] {
   background-position: 0% center !important;
 }
-.cell.ship[data-ship-type="battleship"][data-ship-vertical="false"][data-ship-index="1"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="battleship"][data-ship-vertical="false"][data-ship-index="1"] {
   background-position: 33.333% center !important;
 }
-.cell.ship[data-ship-type="battleship"][data-ship-vertical="false"][data-ship-index="2"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="battleship"][data-ship-vertical="false"][data-ship-index="2"] {
   background-position: 66.666% center !important;
 }
-.cell.ship[data-ship-type="battleship"][data-ship-vertical="false"][data-ship-index="3"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="battleship"][data-ship-vertical="false"][data-ship-index="3"] {
   background-position: 100% center !important;
 }
 
 /* CRUCERO (3 celdas) */
-.cell.ship[data-ship-type="cruiser"][data-ship-vertical="true"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="cruiser"][data-ship-vertical="true"] {
   background: url('../images/cruceroVertical.png') no-repeat !important;
   background-size: 100% 300% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
-.cell.ship[data-ship-type="cruiser"][data-ship-vertical="false"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="cruiser"][data-ship-vertical="false"] {
   background: url('../images/cruzeroHorizontal.png') no-repeat !important;
   background-size: 300% 100% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
-.cell.ship[data-ship-type="cruiser"][data-ship-vertical="true"][data-ship-index="0"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="cruiser"][data-ship-vertical="true"][data-ship-index="0"] {
   background-position: center 0% !important;
 }
-.cell.ship[data-ship-type="cruiser"][data-ship-vertical="true"][data-ship-index="1"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="cruiser"][data-ship-vertical="true"][data-ship-index="1"] {
   background-position: center 50% !important;
 }
-.cell.ship[data-ship-type="cruiser"][data-ship-vertical="true"][data-ship-index="2"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="cruiser"][data-ship-vertical="true"][data-ship-index="2"] {
   background-position: center 100% !important;
 }
-.cell.ship[data-ship-type="cruiser"][data-ship-vertical="false"][data-ship-index="0"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="cruiser"][data-ship-vertical="false"][data-ship-index="0"] {
   background-position: 0% center !important;
 }
-.cell.ship[data-ship-type="cruiser"][data-ship-vertical="false"][data-ship-index="1"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="cruiser"][data-ship-vertical="false"][data-ship-index="1"] {
   background-position: 50% center !important;
 }
-.cell.ship[data-ship-type="cruiser"][data-ship-vertical="false"][data-ship-index="2"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="cruiser"][data-ship-vertical="false"][data-ship-index="2"] {
   background-position: 100% center !important;
 }
 
 /* SUBMARINO (3 celdas) */
-.cell.ship[data-ship-type="submarine"][data-ship-vertical="true"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="submarine"][data-ship-vertical="true"] {
   background: url('../images/submarinoVertical.png') no-repeat !important;
   background-size: 100% 300% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
-.cell.ship[data-ship-type="submarine"][data-ship-vertical="false"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="submarine"][data-ship-vertical="false"] {
   background: url('../images/submarinoHorizontal.png') no-repeat !important;
   background-size: 300% 100% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
-.cell.ship[data-ship-type="submarine"][data-ship-vertical="true"][data-ship-index="0"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="submarine"][data-ship-vertical="true"][data-ship-index="0"] {
   background-position: center 0% !important;
 }
-.cell.ship[data-ship-type="submarine"][data-ship-vertical="true"][data-ship-index="1"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="submarine"][data-ship-vertical="true"][data-ship-index="1"] {
   background-position: center 50% !important;
 }
-.cell.ship[data-ship-type="submarine"][data-ship-vertical="true"][data-ship-index="2"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="submarine"][data-ship-vertical="true"][data-ship-index="2"] {
   background-position: center 100% !important;
 }
-.cell.ship[data-ship-type="submarine"][data-ship-vertical="false"][data-ship-index="0"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="submarine"][data-ship-vertical="false"][data-ship-index="0"] {
   background-position: 0% center !important;
 }
-.cell.ship[data-ship-type="submarine"][data-ship-vertical="false"][data-ship-index="1"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="submarine"][data-ship-vertical="false"][data-ship-index="1"] {
   background-position: 50% center !important;
 }
-.cell.ship[data-ship-type="submarine"][data-ship-vertical="false"][data-ship-index="2"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="submarine"][data-ship-vertical="false"][data-ship-index="2"] {
   background-position: 100% center !important;
 }
 
 /* DESTRUCTOR (2 celdas) */
-.cell.ship[data-ship-type="destroyer"][data-ship-vertical="true"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="destroyer"][data-ship-vertical="true"] {
   background: url('../images/destructorVertical.png') no-repeat !important;
   background-size: 100% 200% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
-.cell.ship[data-ship-type="destroyer"][data-ship-vertical="false"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="destroyer"][data-ship-vertical="false"] {
   background: url('../images/destructorHorizontal.png') no-repeat !important;
   background-size: 200% 100% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
-.cell.ship[data-ship-type="destroyer"][data-ship-vertical="true"][data-ship-index="0"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="destroyer"][data-ship-vertical="true"][data-ship-index="0"] {
   background-position: center 0% !important;
 }
-.cell.ship[data-ship-type="destroyer"][data-ship-vertical="true"][data-ship-index="1"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="destroyer"][data-ship-vertical="true"][data-ship-index="1"] {
   background-position: center 100% !important;
 }
-.cell.ship[data-ship-type="destroyer"][data-ship-vertical="false"][data-ship-index="0"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="destroyer"][data-ship-vertical="false"][data-ship-index="0"] {
   background-position: 0% center !important;
 }
-.cell.ship[data-ship-type="destroyer"][data-ship-vertical="false"][data-ship-index="1"] {
+.board:not(.enemy-board) .cell.ship[data-ship-type="destroyer"][data-ship-vertical="false"][data-ship-index="1"] {
   background-position: 100% center !important;
 }
 
