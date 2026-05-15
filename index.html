@@ -102,6 +102,31 @@
 </section>
 
 
+<!-- ══════════════ NOMBRES (2P) ══════════════ -->
+<section id="screen-names" class="screen">
+  <div class="handoff-wrap">
+    <div class="handoff-shield">⚔️</div>
+    <div class="handoff-eyebrow">MODO 2 JUGADORES</div>
+    <h2 class="handoff-name">INGRESA LOS NOMBRES</h2>
+    <div class="names-form">
+      <div class="name-input-group">
+        <label for="player1-name">Jugador 1:</label>
+        <input type="text" id="player1-name" placeholder="Tu nombre..." maxlength="20" autocomplete="off"/>
+      </div>
+      <div class="name-input-group">
+        <label for="player2-name">Jugador 2:</label>
+        <input type="text" id="player2-name" placeholder="Tu nombre..." maxlength="20" autocomplete="off"/>
+      </div>
+    </div>
+    <button class="btn-play" id="btn-names-continue">
+      <span class="bp-icon">◈</span>
+      <span class="bp-body"><strong>CONTINUAR</strong><small>Inicia el posicionamiento</small></span>
+      <span class="bp-arrow">›</span>
+    </button>
+  </div>
+</section>
+
+
 <!-- ══════════════ POSICIONAMIENTO ══════════════ -->
 <section id="screen-placement" class="screen">
   <header class="game-header">
@@ -271,6 +296,47 @@
     <div class="go-eyebrow" id="go-eyebrow">— VICTORIA —</div>
     <h2 class="go-title" id="go-title">¡Misión Cumplida!</h2>
     <p class="go-desc" id="go-desc">Has hundido toda la flota enemiga.</p>
+    
+    <!-- Tableros finales revelados -->
+    <div class="go-boards-container">
+      <div class="go-board-panel">
+        <div class="go-board-title" id="go-board-1-title">Tu Flota</div>
+        <div class="board-frame" style="max-width: 320px">
+          <div class="board-col-labels">
+            <div class="lbl-corner"></div>
+            <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span>
+            <span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
+          </div>
+          <div class="board-body">
+            <div class="board-row-labels">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+              <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="board" id="go-board-1"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="go-board-panel">
+        <div class="go-board-title" id="go-board-2-title">Flota Enemiga</div>
+        <div class="board-frame" style="max-width: 320px">
+          <div class="board-col-labels">
+            <div class="lbl-corner"></div>
+            <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span>
+            <span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
+          </div>
+          <div class="board-body">
+            <div class="board-row-labels">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+              <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <div class="board" id="go-board-2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="go-desc" id="go-desc">
     <div class="go-stats" id="go-stats"></div>
     <div class="go-actions">
       <button class="btn-play" id="btn-play-again">
