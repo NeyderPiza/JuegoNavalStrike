@@ -26,6 +26,7 @@ const G = {
   placing:   1,             // player being placed (1 or 2)
   placed:    { 1: [], 2: [] },
   selShip:   null,          // { id, name, size }
+  editingShip: null,        // index of ship being edited in G.placed[G.placing]
   vertical:  false,
 
   /* Battle */
@@ -102,20 +103,19 @@ function shipCells({ row, col, size, vertical }) {
 
 function inBounds(r, c) { return r >= 0 && r < GRID && c >= 0 && c < GRID }
 
-/** True if ship can be placed without overlapping or touching existing ships */
+/** True if ship doesn't overlap with existing ships (can touch sides and diagonals) */
 function canPlace(placed, ship) {
   const newCells = shipCells(ship);
   for (const [r, c] of newCells)
     if (!inBounds(r, c)) return false;
 
-  const forbidden = new Set();
+  /* Only forbid exact cell overlap - allow touching on all sides */
+  const occupied = new Set();
   for (const s of placed)
     for (const [r, c] of shipCells(s))
-      for (let dr = -1; dr <= 1; dr++)
-        for (let dc = -1; dc <= 1; dc++)
-          forbidden.add(`${r + dr},${c + dc}`);
+      occupied.add(`${r},${c}`);
 
-  return newCells.every(([r, c]) => !forbidden.has(`${r},${c}`));
+  return newCells.every(([r, c]) => !occupied.has(`${r},${c}`));
 }
 
 /** Generate a valid random placement for all ships */
@@ -307,18 +307,22 @@ function redrawPlacement() {
     delete c.dataset.shipIndex;
     delete c.dataset.shipSize;
     delete c.dataset.shipVertical;
+    delete c.dataset.shipPlacedIndex;
   });
   // Draw placed ships
-  for (const s of G.placed[G.placing]) {
+  for (let shipIdx = 0; shipIdx < G.placed[G.placing].length; shipIdx++) {
+    const s = G.placed[G.placing][shipIdx];
     const cells = shipCells(s);
     cells.forEach(([r, c], idx) => {
       const cell = getCell('placement-board', r, c);
       if (cell) {
         cell.classList.add('ship');
+        if (shipIdx === G.editingShip) cell.classList.add('editing');
         cell.dataset.shipType = s.id;
         cell.dataset.shipIndex = idx;
         cell.dataset.shipSize = s.size;
         cell.dataset.shipVertical = s.vertical ? 'true' : 'false';
+        cell.dataset.shipPlacedIndex = shipIdx;
       }
     });
   }
@@ -329,18 +333,63 @@ function clearHover() {
     c.classList.remove('hover-ok', 'hover-bad'));
 }
 
+function selectShipForEdit(shipIndex) {
+  G.editingShip = shipIndex;
+  const ship = G.placed[G.placing][shipIndex];
+  G.vertical = ship.vertical;
+  $('rotate-icon').textContent  = G.vertical ? '↺' : '↻';
+  $('orient-badge').textContent = G.vertical ? '↑ VERTICAL' : '→ HORIZONTAL';
+  $('hint-text').textContent = 'Editando: ' + ship.name + ' — Haz clic para mover o Eliminar para cancelar';
+  redrawPlacement();
+}
+
 function previewPlacement(r, c) {
   clearHover();
-  if (!G.selShip) return;
-  const ship = { ...G.selShip, row: r, col: c, vertical: G.vertical };
-  const ok   = canPlace(G.placed[G.placing], ship);
-  for (const [sr, sc] of shipCells(ship)) {
-    if (!inBounds(sr, sc)) continue;
-    getCell('placement-board', sr, sc)?.classList.add(ok ? 'hover-ok' : 'hover-bad');
+  let ship;
+  
+  if (G.editingShip !== null) {
+    /* Preview for editing existing ship */
+    const existing = G.placed[G.placing][G.editingShip];
+    ship = { ...existing, row: r, col: c, vertical: G.vertical };
+    const others = G.placed[G.placing].filter((_, idx) => idx !== G.editingShip);
+    const ok = canPlace(others, ship);
+    for (const [sr, sc] of shipCells(ship)) {
+      if (!inBounds(sr, sc)) continue;
+      getCell('placement-board', sr, sc)?.classList.add(ok ? 'hover-ok' : 'hover-bad');
+    }
+  } else if (G.selShip) {
+    /* Preview for placing new ship */
+    ship = { ...G.selShip, row: r, col: c, vertical: G.vertical };
+    const ok = canPlace(G.placed[G.placing], ship);
+    for (const [sr, sc] of shipCells(ship)) {
+      if (!inBounds(sr, sc)) continue;
+      getCell('placement-board', sr, sc)?.classList.add(ok ? 'hover-ok' : 'hover-bad');
+    }
   }
 }
 
 function placeShip(r, c) {
+  /* If editing existing ship */
+  if (G.editingShip !== null) {
+    const ship = G.placed[G.placing][G.editingShip];
+    const newShip = { ...ship, row: r, col: c, vertical: G.vertical };
+    
+    /* Check placement without current ship */
+    const others = G.placed[G.placing].filter((_, idx) => idx !== G.editingShip);
+    if (!canPlace(others, newShip)) {
+      toast('No se puede mover ahí', 'err');
+      return;
+    }
+    
+    G.placed[G.placing][G.editingShip] = newShip;
+    G.editingShip = null;
+    $('hint-text').textContent = 'Selecciona un barco y haz clic en el tablero';
+    redrawPlacement();
+    clearHover();
+    return;
+  }
+  
+  /* Place new ship */
   if (!G.selShip) { toast('Selecciona un barco primero', 'err'); return }
   const ship = { ...G.selShip, row: r, col: c, vertical: G.vertical, hits: 0, sunk: false };
   if (!canPlace(G.placed[G.placing], ship)) { toast('No se puede colocar ahí', 'err'); return }
@@ -774,10 +823,18 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   $('placement-board').addEventListener('mouseleave', clearHover);
 
-  /* Place ship on click */
+  /* Place ship or select for edit on click */
   $('placement-board').addEventListener('click', e => {
     const c = e.target.closest('.cell');
-    if (c) placeShip(+c.dataset.row, +c.dataset.col);
+    if (!c) return;
+    
+    /* If clicking on placed ship and not in editing mode, select for edit */
+    if (c.classList.contains('ship') && G.editingShip === null && !G.selShip) {
+      const shipPlacedIndex = +c.dataset.shipPlacedIndex;
+      selectShipForEdit(shipPlacedIndex);
+    } else {
+      placeShip(+c.dataset.row, +c.dataset.col);
+    }
   });
 
   /* Touch support for placement */
@@ -800,7 +857,15 @@ document.addEventListener('DOMContentLoaded', () => {
       $('btn-random').click();
     } else if (e.key === 'Delete') {
       e.preventDefault();
-      $('btn-clear').click();
+      /* Cancel edit or clear all */
+      if (G.editingShip !== null) {
+        G.editingShip = null;
+        $('hint-text').textContent = 'Selecciona un barco y haz clic en el tablero';
+        redrawPlacement();
+        clearHover();
+      } else {
+        $('btn-clear').click();
+      }
     }
   });
 

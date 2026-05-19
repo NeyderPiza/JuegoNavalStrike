@@ -527,6 +527,16 @@ kbd {
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
 
+.cell.ship.editing {
+  animation: pulse-edit 0.8s ease-in-out infinite;
+  box-shadow: inset 0 0 12px rgba(255,193,7,.4), 0 0 12px rgba(255,193,7,.3) !important;
+}
+
+@keyframes pulse-edit {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.3); }
+}
+
 /* ───────────────────────────────────────────────────────────────
    SHIPS WITH IMAGES — Image spans all cells, no distortion
    ONLY in placement and own-board, NOT in enemy-board
