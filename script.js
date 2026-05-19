@@ -828,12 +828,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const c = e.target.closest('.cell');
     if (!c) return;
     
-    /* If clicking on placed ship and not in editing mode, select for edit */
-    if (c.classList.contains('ship') && G.editingShip === null && !G.selShip) {
+    /* If clicking on placed ship, select for edit or change selection */
+    if (c.classList.contains('ship')) {
       const shipPlacedIndex = +c.dataset.shipPlacedIndex;
+      /* Deselect ship from list and switch to edit mode */
+      G.selShip = null;
+      document.querySelectorAll('.ship-item').forEach(li => li.classList.remove('selected'));
       selectShipForEdit(shipPlacedIndex);
     } else {
-      placeShip(+c.dataset.row, +c.dataset.col);
+      /* Clicking on empty water */
+      if (G.editingShip !== null || G.selShip) {
+        /* Try to place/move ship */
+        placeShip(+c.dataset.row, +c.dataset.col);
+      } else {
+        /* No selection, deselect any editing */
+        G.editingShip = null;
+        $('hint-text').textContent = 'Selecciona un barco y haz clic en el tablero';
+        redrawPlacement();
+        clearHover();
+      }
     }
   });
 
