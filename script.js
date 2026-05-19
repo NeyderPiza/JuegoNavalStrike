@@ -788,13 +788,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (hit) placeShip(+hit.dataset.row, +hit.dataset.col);
   }, { passive: false });
 
-  /* Keyboard shortcut R */
+  /* Keyboard shortcuts: R (rotate), A (random), Delete (clear) */
   document.addEventListener('keydown', e => {
     if (G.phase !== 'placement') return;
     if (e.key === 'r' || e.key === 'R') {
       G.vertical = !G.vertical;
       $('rotate-icon').textContent  = G.vertical ? '↺' : '↻';
       $('orient-badge').textContent = G.vertical ? '↑ VERTICAL' : '→ HORIZONTAL';
+    } else if (e.key === 'a' || e.key === 'A') {
+      e.preventDefault();
+      $('btn-random').click();
+    } else if (e.key === 'Delete') {
+      e.preventDefault();
+      $('btn-clear').click();
     }
   });
 
