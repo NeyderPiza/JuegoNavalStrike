@@ -538,12 +538,12 @@ kbd {
 
 /* PORTAAVIONES (5 celdas) */
 .board:not(.enemy-board) .cell.ship[data-ship-type="carrier"][data-ship-vertical="true"] {
-  background: url('../images/PortaAvionesVertical.png') no-repeat !important;
+  background: url('images/PortaAvionesVertical.png') no-repeat !important;
   background-size: 100% 500% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
 .board:not(.enemy-board) .cell.ship[data-ship-type="carrier"][data-ship-vertical="false"] {
-  background: url('../images/PortaAvionesHorizontal.png') no-repeat !important;
+  background: url('images/PortaAvionesHorizontal.png') no-repeat !important;
   background-size: 500% 100% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
@@ -580,12 +580,12 @@ kbd {
 
 /* ACORAZADO (4 celdas) */
 .board:not(.enemy-board) .cell.ship[data-ship-type="battleship"][data-ship-vertical="true"] {
-  background: url('../images/AcorazadoVertical.png') no-repeat !important;
+  background: url('images/AcorazadoVertical.png') no-repeat !important;
   background-size: 100% 400% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
 .board:not(.enemy-board) .cell.ship[data-ship-type="battleship"][data-ship-vertical="false"] {
-  background: url('../images/AcorazadoHorizontal.png') no-repeat !important;
+  background: url('images/AcorazadoHorizontal.png') no-repeat !important;
   background-size: 400% 100% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
@@ -616,12 +616,12 @@ kbd {
 
 /* CRUCERO (3 celdas) */
 .board:not(.enemy-board) .cell.ship[data-ship-type="cruiser"][data-ship-vertical="true"] {
-  background: url('../images/cruceroVertical.png') no-repeat !important;
+  background: url('images/cruceroVertical.png') no-repeat !important;
   background-size: 100% 300% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
 .board:not(.enemy-board) .cell.ship[data-ship-type="cruiser"][data-ship-vertical="false"] {
-  background: url('../images/cruzeroHorizontal.png') no-repeat !important;
+  background: url('images/cruzeroHorizontal.png') no-repeat !important;
   background-size: 300% 100% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
@@ -646,12 +646,12 @@ kbd {
 
 /* SUBMARINO (3 celdas) */
 .board:not(.enemy-board) .cell.ship[data-ship-type="submarine"][data-ship-vertical="true"] {
-  background: url('../images/submarinoVertical.png') no-repeat !important;
+  background: url('images/submarinoVertical.png') no-repeat !important;
   background-size: 100% 300% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
 .board:not(.enemy-board) .cell.ship[data-ship-type="submarine"][data-ship-vertical="false"] {
-  background: url('../images/submarinoHorizontal.png') no-repeat !important;
+  background: url('images/submarinoHorizontal.png') no-repeat !important;
   background-size: 300% 100% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
@@ -676,12 +676,12 @@ kbd {
 
 /* DESTRUCTOR (2 celdas) */
 .board:not(.enemy-board) .cell.ship[data-ship-type="destroyer"][data-ship-vertical="true"] {
-  background: url('../images/destructorVertical.png') no-repeat !important;
+  background: url('images/destructorVertical.png') no-repeat !important;
   background-size: 100% 200% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
 .board:not(.enemy-board) .cell.ship[data-ship-type="destroyer"][data-ship-vertical="false"] {
-  background: url('../images/destructorHorizontal.png') no-repeat !important;
+  background: url('images/destructorHorizontal.png') no-repeat !important;
   background-size: 200% 100% !important;
   box-shadow: inset 0 0 8px rgba(0,212,245,.18);
 }
