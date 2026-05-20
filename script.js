@@ -719,6 +719,17 @@ function endGame(winner) {
     });
   }
 
+  /* ── Populate end-game boards ── */
+  const leftLabel  = is1P ? 'Flota Enemiga (IA)' : `Jugador ${winner === 2 ? '2 🏆' : '2'}`;
+  const rightLabel = is1P ? 'Tu Flota'           : `Jugador ${winner === 1 ? '1 🏆' : '1'}`;
+  $('go-board-1-title').textContent = leftLabel;
+  $('go-board-2-title').textContent = rightLabel;
+
+  buildBoardDOM('go-board-1');
+  buildBoardDOM('go-board-2');
+  renderBoard(G.boards[2], 'go-board-1', false);
+  renderBoard(G.boards[1], 'go-board-2', false);
+
   showScreen('screen-gameover');
 }
 
