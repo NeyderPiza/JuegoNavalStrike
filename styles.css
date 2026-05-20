@@ -1249,6 +1249,29 @@ kbd {
 }
 .info-modal-close:hover { color: var(--cyan); }
 
+/* ── SCORES TABLE ───────────────────────────────────────────────── */
+.scores-table {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--font-mono); font-size: .72rem;
+}
+.scores-table th {
+  font-family: var(--font-hud); font-size: .5rem; letter-spacing: .12em;
+  color: var(--muted); padding: .4rem .5rem; border-bottom: 1px solid var(--b-faint);
+  text-align: left;
+}
+.scores-table td {
+  padding: .45rem .5rem; border-bottom: 1px solid var(--b-faint);
+  color: var(--muted-b); vertical-align: middle; line-height: 1.4;
+}
+.sc-row-even td { background: rgba(0,212,245,.03); }
+.sc-rank { color: var(--muted); font-size: .65rem; }
+.sc-mode {
+  font-family: var(--font-hud); font-size: .55rem; letter-spacing: .1em;
+  border: 1px solid var(--b-faint); border-radius: 3px; padding: .1rem .3rem;
+  color: var(--cyan-d);
+}
+.sc-stats { font-size: .68rem; color: var(--muted-b); }
+
 /* ── MUSIC BUTTON ───────────────────────────────────────────────── */
 .btn-music {
   position: fixed;

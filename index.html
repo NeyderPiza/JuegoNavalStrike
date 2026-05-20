@@ -52,6 +52,9 @@
           <button class="btn-info" id="btn-info-preview">
             <span class="bi-icon">🚢</span><span>VISTA DE FLOTA</span>
           </button>
+          <button class="btn-info" id="btn-info-scores">
+            <span class="bi-icon">🏅</span><span>PUNTUACIONES</span>
+          </button>
         </div>
       </nav>
     </div>
@@ -120,6 +123,11 @@
     <div class="fp-row"><div class="fp-ship s3 alt"></div><span class="fp-name">Submarino <em>×3</em></span></div>
     <div class="fp-row"><div class="fp-ship s2"></div><span class="fp-name">Destructor <em>×2</em></span></div>
   </div>
+</template>
+
+<template id="tpl-scores">
+  <div class="info-head"><span class="info-dot cyan"></span>PUNTUACIONES</div>
+  <div id="scores-modal-content"></div>
 </template>
 
 
@@ -372,6 +380,7 @@
       <span class="bp-body"><strong>JUGAR DE NUEVO</strong><small>Misma configuración</small></span>
       <span class="bp-arrow">›</span>
     </button>
+    <button class="btn-back-wide" id="btn-go-scores">🏅 PUNTUACIONES</button>
     <button class="btn-back-wide" id="btn-main-menu">‹ MENÚ PRINCIPAL</button>
   </div>
 </section>

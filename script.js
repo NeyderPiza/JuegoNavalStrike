@@ -517,6 +517,11 @@ function processShot(res, row, col, board, boardId, trackerId) {
 
   updateScoreDOM();
 
+  /* ── SFX ── */
+  if      (res === 'miss') SFX.playMiss();
+  else if (res === 'hit')  SFX.playHit();
+  else                     SFX.playSunk();
+
   /* ── Log + icon ── */
   const isHuman = G.attacker === 1 || G.mode === '2p';
   if (res === 'miss') {
@@ -718,6 +723,17 @@ function endGame(winner) {
       statsEl.appendChild(d);
     });
   }
+
+  /* ── Save score ── */
+  saveScore({
+    date:   Date.now(),
+    mode:   G.mode,
+    result: isWin ? 'win' : 'loss',
+    winner,
+    hits:   G.stats.hits,
+    misses: G.stats.misses,
+    sunk:   G.stats.sunk,
+  });
 
   /* ── Populate end-game boards ── */
   const leftLabel  = is1P ? 'Flota Enemiga (IA)' : `Jugador ${winner === 2 ? '2 🏆' : '2'}`;
@@ -972,6 +988,75 @@ document.addEventListener('DOMContentLoaded', () => {
   showScreen('screen-menu');
 });
 
+/* ── SCORES ─────────────────────────────────────────────────────── */
+const SCORES_KEY = 'navalStrike_scores';
+const MAX_SCORES = 20;
+
+function saveScore(entry) {
+  const list = getScores();
+  list.unshift(entry);
+  if (list.length > MAX_SCORES) list.length = MAX_SCORES;
+  try { localStorage.setItem(SCORES_KEY, JSON.stringify(list)); } catch (_) {}
+}
+
+function getScores() {
+  try { return JSON.parse(localStorage.getItem(SCORES_KEY) || '[]'); } catch (_) { return []; }
+}
+
+function renderScoresHTML() {
+  const list = getScores();
+  if (!list.length) {
+    return '<p style="color:var(--muted-b);text-align:center;padding:1rem;font-size:.8rem">Aún no hay partidas registradas.</p>';
+  }
+  const rows = list.map((s, i) => {
+    const d    = new Date(s.date);
+    const fecha = d.toLocaleDateString('es', { day:'2-digit', month:'2-digit', year:'2-digit' });
+    const hora  = d.toLocaleTimeString('es', { hour:'2-digit', minute:'2-digit' });
+    const modo  = s.mode === '1p' ? '1P' : '2P';
+    const res   = s.result === 'win'
+      ? '<span style="color:var(--green)">VICTORIA</span>'
+      : '<span style="color:var(--red)">DERROTA</span>';
+    const stats = s.mode === '1p'
+      ? `<span title="Impactos">${s.hits}💥</span> <span title="Fallos">${s.misses}💧</span> <span title="Hundidos">${s.sunk}🚢</span>`
+      : `J${s.winner} gana`;
+    return `<tr class="${i % 2 === 0 ? 'sc-row-even' : ''}">
+      <td class="sc-rank">#${i + 1}</td>
+      <td>${fecha}<br/><span style="color:var(--muted);font-size:.6rem">${hora}</span></td>
+      <td><span class="sc-mode">${modo}</span></td>
+      <td>${res}</td>
+      <td class="sc-stats">${stats}</td>
+    </tr>`;
+  }).join('');
+  return `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:.5rem">
+      <button id="btn-clear-scores" style="
+        background:transparent;border:1px solid var(--red);border-radius:4px;
+        color:var(--red);font-family:var(--font-hud);font-size:.55rem;
+        letter-spacing:.08em;padding:.25rem .6rem;cursor:pointer">
+        🗑 BORRAR TODO
+      </button>
+    </div>
+    <table class="scores-table">
+      <thead><tr><th>#</th><th>FECHA</th><th>MODO</th><th>RESULTADO</th><th>STATS</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function openScoresModal() {
+  const overlay = document.getElementById('info-modal-overlay');
+  const body    = document.getElementById('info-modal-body');
+  body.innerHTML = `<div class="info-head"><span class="info-dot cyan"></span>PUNTUACIONES</div>` + renderScoresHTML();
+  overlay.classList.add('open');
+  const clearBtn = body.querySelector('#btn-clear-scores');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      if (!confirm('¿Borrar todo el historial de partidas?')) return;
+      localStorage.removeItem(SCORES_KEY);
+      body.innerHTML = `<div class="info-head"><span class="info-dot cyan"></span>PUNTUACIONES</div>` + renderScoresHTML();
+    });
+  }
+}
+
 /* ── INFO MODALS ────────────────────────────────────────────────── */
 (function () {
   const overlay = document.getElementById('info-modal-overlay');
@@ -989,11 +1074,246 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-info-controls').addEventListener('click', () => openModal('tpl-controls'));
   document.getElementById('btn-info-fleet')   .addEventListener('click', () => openModal('tpl-fleet'));
   document.getElementById('btn-info-preview') .addEventListener('click', () => openModal('tpl-preview'));
+  document.getElementById('btn-info-scores')  .addEventListener('click', openScoresModal);
+  document.getElementById('btn-go-scores')    .addEventListener('click', openScoresModal);
 
   closeBtn.addEventListener('click', () => overlay.classList.remove('open'));
   overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') overlay.classList.remove('open'); });
 }());
+
+/* ── SFX ────────────────────────────────────────────────────────── */
+const SFX = (() => {
+  let ctx = null;
+
+  function getCtx() {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+
+  /* Helpers */
+  function makeNoise(c, dur, stereo = false) {
+    const ch  = stereo ? 2 : 1;
+    const buf = c.createBuffer(ch, Math.ceil(c.sampleRate * dur), c.sampleRate);
+    for (let ch = 0; ch < buf.numberOfChannels; ch++) {
+      const d = buf.getChannelData(ch);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    const src = c.createBufferSource();
+    src.buffer = buf;
+    return src;
+  }
+
+  function makeReverb(c, dur = 1.2, decay = 2) {
+    const sr  = c.sampleRate;
+    const len = Math.ceil(sr * dur);
+    const buf = c.createBuffer(2, len, sr);
+    for (let ch = 0; ch < 2; ch++) {
+      const d = buf.getChannelData(ch);
+      for (let i = 0; i < len; i++)
+        d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+    }
+    const conv = c.createConvolver();
+    conv.buffer = buf;
+    return conv;
+  }
+
+  function lpf(c, freq, q = 1) {
+    const f = c.createBiquadFilter();
+    f.type = 'lowpass'; f.frequency.value = freq; f.Q.value = q;
+    return f;
+  }
+
+  function hpf(c, freq) {
+    const f = c.createBiquadFilter();
+    f.type = 'highpass'; f.frequency.value = freq;
+    return f;
+  }
+
+  function gain(c, v) {
+    const g = c.createGain(); g.gain.value = v; return g;
+  }
+
+  /* ── MISS: agua — torpedo cae al mar ── */
+  function playMiss() {
+    const c = getCtx();
+    const t = c.currentTime;
+    const master = gain(c, 0.7);
+    master.connect(c.destination);
+    const reverb = makeReverb(c, 0.8, 3);
+    reverb.connect(master);
+
+    /* Plop inicial: sine breve descendente */
+    const plop = c.createOscillator();
+    plop.type = 'sine';
+    plop.frequency.setValueAtTime(320, t);
+    plop.frequency.exponentialRampToValueAtTime(60, t + 0.08);
+    const plopG = gain(c, 0);
+    plopG.gain.setValueAtTime(0, t);
+    plopG.gain.linearRampToValueAtTime(0.6, t + 0.005);
+    plopG.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+    plop.connect(plopG); plopG.connect(reverb);
+    plop.start(t); plop.stop(t + 0.12);
+
+    /* Burbujeo: ruido bandpass que baja */
+    const bubbleNoise = makeNoise(c, 0.45, true);
+    const bp = c.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.setValueAtTime(1200, t);
+    bp.frequency.exponentialRampToValueAtTime(180, t + 0.45);
+    bp.Q.value = 2.5;
+    const bubbleG = gain(c, 0);
+    bubbleG.gain.setValueAtTime(0, t);
+    bubbleG.gain.linearRampToValueAtTime(0.35, t + 0.01);
+    bubbleG.gain.setValueAtTime(0.35, t + 0.05);
+    bubbleG.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+    bubbleNoise.connect(bp); bp.connect(bubbleG); bubbleG.connect(reverb);
+    bubbleNoise.start(t);
+
+    /* Spray suave: ruido highpass tenue */
+    const spray = makeNoise(c, 0.3, true);
+    const sprayLP = lpf(c, 3500);
+    const sprayHP = hpf(c, 2000);
+    const sprayG  = gain(c, 0);
+    sprayG.gain.setValueAtTime(0, t);
+    sprayG.gain.linearRampToValueAtTime(0.15, t + 0.02);
+    sprayG.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+    spray.connect(sprayHP); sprayHP.connect(sprayLP); sprayLP.connect(sprayG);
+    sprayG.connect(master);
+    spray.start(t);
+  }
+
+  /* ── HIT: impacto — explosión media ── */
+  function playHit() {
+    const c = getCtx();
+    const t = c.currentTime;
+    const master = gain(c, 0.85);
+    master.connect(c.destination);
+    const reverb = makeReverb(c, 1.4, 2.2);
+    reverb.connect(master);
+
+    /* Sub-boom: sine grave que cae */
+    const sub = c.createOscillator();
+    sub.type = 'sine';
+    sub.frequency.setValueAtTime(140, t);
+    sub.frequency.exponentialRampToValueAtTime(22, t + 0.55);
+    const subG = gain(c, 0);
+    subG.gain.setValueAtTime(0, t);
+    subG.gain.linearRampToValueAtTime(1.0, t + 0.004);
+    subG.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
+    sub.connect(subG); subG.connect(master); subG.connect(reverb);
+    sub.start(t); sub.stop(t + 0.6);
+
+    /* Mid boom: sine 2a armónica */
+    const mid = c.createOscillator();
+    mid.type = 'sine';
+    mid.frequency.setValueAtTime(280, t);
+    mid.frequency.exponentialRampToValueAtTime(45, t + 0.3);
+    const midG = gain(c, 0);
+    midG.gain.setValueAtTime(0, t);
+    midG.gain.linearRampToValueAtTime(0.5, t + 0.003);
+    midG.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+    mid.connect(midG); midG.connect(reverb);
+    mid.start(t); mid.stop(t + 0.35);
+
+    /* Transiente: crack de ruido con LP */
+    const crack = makeNoise(c, 0.06, true);
+    const crackLP = lpf(c, 4000);
+    const crackG  = gain(c, 0);
+    crackG.gain.setValueAtTime(0, t);
+    crackG.gain.linearRampToValueAtTime(0.9, t + 0.002);
+    crackG.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+    crack.connect(crackLP); crackLP.connect(crackG); crackG.connect(master);
+    crack.start(t);
+
+    /* Cuerpo: ruido de explosión con LP que baja */
+    const body = makeNoise(c, 0.5, true);
+    const bodyLP = c.createBiquadFilter();
+    bodyLP.type = 'lowpass';
+    bodyLP.frequency.setValueAtTime(3500, t);
+    bodyLP.frequency.exponentialRampToValueAtTime(300, t + 0.5);
+    const bodyG = gain(c, 0);
+    bodyG.gain.setValueAtTime(0, t);
+    bodyG.gain.linearRampToValueAtTime(0.55, t + 0.005);
+    bodyG.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+    body.connect(bodyLP); bodyLP.connect(bodyG);
+    bodyG.connect(reverb); bodyG.connect(master);
+    body.start(t);
+  }
+
+  /* ── SUNK: hundido — explosión grande + estructuras ── */
+  function playSunk() {
+    const c = getCtx();
+    const t = c.currentTime;
+    const master = gain(c, 0.9);
+    master.connect(c.destination);
+    const reverb = makeReverb(c, 2.5, 1.6);
+    reverb.connect(master);
+
+    /* Sub-boom profundo */
+    const sub = c.createOscillator();
+    sub.type = 'sine';
+    sub.frequency.setValueAtTime(100, t);
+    sub.frequency.exponentialRampToValueAtTime(14, t + 1.0);
+    const subG = gain(c, 0);
+    subG.gain.setValueAtTime(0, t);
+    subG.gain.linearRampToValueAtTime(1.2, t + 0.004);
+    subG.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
+    sub.connect(subG); subG.connect(master); subG.connect(reverb);
+    sub.start(t); sub.stop(t + 1.1);
+
+    /* 2do boom ligeramente desfasado */
+    const sub2 = c.createOscillator();
+    sub2.type = 'sine';
+    sub2.frequency.setValueAtTime(60, t + 0.05);
+    sub2.frequency.exponentialRampToValueAtTime(18, t + 0.85);
+    const sub2G = gain(c, 0);
+    sub2G.gain.setValueAtTime(0, t + 0.05);
+    sub2G.gain.linearRampToValueAtTime(0.75, t + 0.055);
+    sub2G.gain.exponentialRampToValueAtTime(0.001, t + 0.85);
+    sub2.connect(sub2G); sub2G.connect(master); sub2G.connect(reverb);
+    sub2.start(t + 0.05); sub2.stop(t + 0.9);
+
+    /* Crack inicial fuerte */
+    const crack = makeNoise(c, 0.08, true);
+    const crackLP = lpf(c, 5000);
+    const crackG  = gain(c, 0);
+    crackG.gain.setValueAtTime(0, t);
+    crackG.gain.linearRampToValueAtTime(1.1, t + 0.002);
+    crackG.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+    crack.connect(crackLP); crackLP.connect(crackG); crackG.connect(master);
+    crack.start(t);
+
+    /* Cuerpo de explosión largo */
+    const body = makeNoise(c, 1.2, true);
+    const bodyLP = c.createBiquadFilter();
+    bodyLP.type = 'lowpass';
+    bodyLP.frequency.setValueAtTime(4000, t);
+    bodyLP.frequency.exponentialRampToValueAtTime(200, t + 1.2);
+    const bodyG = gain(c, 0);
+    bodyG.gain.setValueAtTime(0, t);
+    bodyG.gain.linearRampToValueAtTime(0.7, t + 0.006);
+    bodyG.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+    body.connect(bodyLP); bodyLP.connect(bodyG);
+    bodyG.connect(reverb); bodyG.connect(master);
+    body.start(t);
+
+    /* Escombros: ruido tenue de alta frecuencia largo */
+    const debris = makeNoise(c, 1.8, true);
+    const debrisHP = hpf(c, 1500);
+    const debrisLP = lpf(c, 6000);
+    const debrisG  = gain(c, 0);
+    debrisG.gain.setValueAtTime(0, t + 0.05);
+    debrisG.gain.linearRampToValueAtTime(0.18, t + 0.12);
+    debrisG.gain.exponentialRampToValueAtTime(0.001, t + 1.8);
+    debris.connect(debrisHP); debrisHP.connect(debrisLP); debrisLP.connect(debrisG);
+    debrisG.connect(reverb);
+    debris.start(t + 0.05);
+  }
+
+  return { playMiss, playHit, playSunk };
+})();
 
 /* ── BACKGROUND MUSIC ───────────────────────────────────────────── */
 (function () {
@@ -1002,7 +1322,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let started  = false;
   let muted    = false;
 
-  music.volume = 0.4;
+  music.volume = 0.18;
 
   function tryPlay() {
     if (started) return;
