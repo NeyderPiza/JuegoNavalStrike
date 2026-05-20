@@ -960,3 +960,55 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── INIT ── */
   showScreen('screen-menu');
 });
+
+/* ── INFO MODALS ────────────────────────────────────────────────── */
+(function () {
+  const overlay = document.getElementById('info-modal-overlay');
+  const body    = document.getElementById('info-modal-body');
+  const closeBtn= document.getElementById('info-modal-close');
+
+  function openModal(tplId) {
+    const tpl = document.getElementById(tplId);
+    body.innerHTML = '';
+    body.appendChild(tpl.content.cloneNode(true));
+    overlay.classList.add('open');
+  }
+
+  document.getElementById('btn-info-specs')   .addEventListener('click', () => openModal('tpl-specs'));
+  document.getElementById('btn-info-controls').addEventListener('click', () => openModal('tpl-controls'));
+  document.getElementById('btn-info-fleet')   .addEventListener('click', () => openModal('tpl-fleet'));
+  document.getElementById('btn-info-preview') .addEventListener('click', () => openModal('tpl-preview'));
+
+  closeBtn.addEventListener('click', () => overlay.classList.remove('open'));
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') overlay.classList.remove('open'); });
+}());
+
+/* ── BACKGROUND MUSIC ───────────────────────────────────────────── */
+(function () {
+  const music  = document.getElementById('bg-music');
+  const btn    = document.getElementById('btn-music');
+  let started  = false;
+  let muted    = false;
+
+  music.volume = 0.4;
+
+  function tryPlay() {
+    if (started) return;
+    started = true;
+    music.play().catch(() => {});
+  }
+
+  /* Start on first user interaction (browser autoplay policy) */
+  document.addEventListener('click', tryPlay, { once: true });
+  document.addEventListener('keydown', tryPlay, { once: true });
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation(); /* don't re-trigger tryPlay via document */
+    tryPlay();
+    muted = !muted;
+    music.muted = muted;
+    btn.textContent = muted ? '🔇' : '🔊';
+    btn.classList.toggle('muted', muted);
+  });
+}());

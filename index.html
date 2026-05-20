@@ -20,8 +20,7 @@
   </div>
 
   <div class="menu-layout">
-    <!-- COLUMNA IZQUIERDA -->
-    <div class="menu-left">
+    <div class="menu-center">
       <header class="menu-logo">
         <div class="logo-eyebrow">— TACTICAL WARFARE —</div>
         <h1 class="logo-title">NAVAL<br/><em class="logo-accent">STRIKE</em></h1>
@@ -39,67 +38,89 @@
           <span class="bp-body"><strong>2 JUGADORES</strong><small>Local · Pass &amp; Play</small></span>
           <span class="bp-arrow">›</span>
         </button>
-      </nav>
 
-      <div class="fleet-preview" aria-label="Flota">
-        <div class="fp-row"><div class="fp-ship s5"></div><span class="fp-name">Portaaviones <em>×5</em></span></div>
-        <div class="fp-row"><div class="fp-ship s4"></div><span class="fp-name">Acorazado <em>×4</em></span></div>
-        <div class="fp-row"><div class="fp-ship s3"></div><span class="fp-name">Crucero <em>×3</em></span></div>
-        <div class="fp-row"><div class="fp-ship s3 alt"></div><span class="fp-name">Submarino <em>×3</em></span></div>
-        <div class="fp-row"><div class="fp-ship s2"></div><span class="fp-name">Destructor <em>×2</em></span></div>
-      </div>
-    </div>
-
-    <!-- COLUMNA DERECHA -->
-    <div class="menu-right">
-
-      <div class="info-panel">
-        <div class="info-head"><span class="info-dot"></span>ESPECIFICACIONES</div>
-        <div class="specs-list">
-          <div class="spec-row"><span class="sk">TABLERO</span><span class="sv">10 × 10 casillas (100 celdas)</span></div>
-          <div class="spec-row"><span class="sk">BARCOS</span><span class="sv">5 embarcaciones · 17 casillas</span></div>
-          <div class="spec-row"><span class="sk">OBJETIVO</span><span class="sv">Hundir toda la flota enemiga</span></div>
-          <div class="spec-row"><span class="sk">ACIERTO</span><span class="sv">Turno extra para el atacante</span></div>
-          <div class="spec-row"><span class="sk">FALLO</span><span class="sv">Turno pasa al rival</span></div>
-          <div class="spec-row"><span class="sk">IA</span><span class="sv">Modo Caza + Persecución activa</span></div>
-          <div class="spec-row"><span class="sk">2 JUGADORES</span><span class="sv">Pass &amp; Play · pantalla oculta</span></div>
-          <div class="spec-row"><span class="sk">TECH</span><span class="sv">Vanilla JS · Sin librerías · Offline</span></div>
+        <div class="menu-info-btns">
+          <button class="btn-info" id="btn-info-specs">
+            <span class="bi-icon">⚙</span><span>ESPECIFICACIONES</span>
+          </button>
+          <button class="btn-info" id="btn-info-controls">
+            <span class="bi-icon">🎮</span><span>CONTROLES</span>
+          </button>
+          <button class="btn-info" id="btn-info-fleet">
+            <span class="bi-icon">⚓</span><span>FLOTA DE COMBATE</span>
+          </button>
+          <button class="btn-info" id="btn-info-preview">
+            <span class="bi-icon">🚢</span><span>VISTA DE FLOTA</span>
+          </button>
         </div>
-      </div>
-
-      <div class="info-panel">
-        <div class="info-head"><span class="info-dot cyan"></span>CONTROLES</div>
-        <div class="ctrl-section">POSICIONAMIENTO</div>
-        <div class="ctrl-row"><kbd>Clic</kbd> en barco<span>Seleccionar embarcación</span></div>
-        <div class="ctrl-row"><kbd>Clic</kbd> en tablero<span>Colocar barco seleccionado</span></div>
-        <div class="ctrl-row"><kbd>R</kbd><span>Rotar barco (horizontal ↔ vertical)</span></div>
-        <div class="ctrl-row"><kbd>⚄ Aleatorio</kbd><span>Posicionamiento automático</span></div>
-        <div class="ctrl-row"><kbd>✕ Limpiar</kbd><span>Retirar todos los barcos</span></div>
-        <div class="ctrl-section" style="margin-top:.8rem">COMBATE</div>
-        <div class="ctrl-row"><kbd>Clic</kbd> en radar<span>Disparar a coordenada</span></div>
-        <div class="ctrl-row"><span class="ldot hit"></span><span><b style="color:var(--orange)">Naranja</b> = Impacto directo</span></div>
-        <div class="ctrl-row"><span class="ldot miss"></span><span><b style="color:var(--cyan)">Azul</b> = Agua · disparo fallado</span></div>
-        <div class="ctrl-row"><span class="ldot sunk"></span><span><b style="color:var(--red)">Rojo</b> = Barco hundido</span></div>
-      </div>
-
-      <div class="info-panel">
-        <div class="info-head"><span class="info-dot orange"></span>FLOTA DE COMBATE</div>
-        <table class="fleet-table">
-          <thead><tr><th>EMBARCACIÓN</th><th>VISUAL</th><th>CELDAS</th></tr></thead>
-          <tbody>
-            <tr><td>Portaaviones</td><td><div class="ft-ship s5"></div></td><td>5</td></tr>
-            <tr><td>Acorazado</td>  <td><div class="ft-ship s4"></div></td><td>4</td></tr>
-            <tr><td>Crucero</td>    <td><div class="ft-ship s3"></div></td><td>3</td></tr>
-            <tr><td>Submarino</td>  <td><div class="ft-ship s3 alt"></div></td><td>3</td></tr>
-            <tr><td>Destructor</td> <td><div class="ft-ship s2"></div></td><td>2</td></tr>
-          </tbody>
-        </table>
-      </div>
-
+      </nav>
     </div>
   </div>
   <footer class="menu-footer">NAVAL STRIKE &nbsp;·&nbsp; Grid 10×10 &nbsp;·&nbsp; 5 Barcos &nbsp;·&nbsp; IA Táctica &nbsp;·&nbsp; 100% Offline</footer>
 </section>
+
+<!-- ══════════════ MODALES DE INFORMACIÓN ══════════════ -->
+<div class="info-modal-overlay" id="info-modal-overlay">
+  <div class="info-modal" id="info-modal">
+    <button class="info-modal-close" id="info-modal-close">✕</button>
+    <div class="info-modal-body" id="info-modal-body"></div>
+  </div>
+</div>
+
+<!-- Contenidos de modales (ocultos) -->
+<template id="tpl-specs">
+  <div class="info-head"><span class="info-dot"></span>ESPECIFICACIONES</div>
+  <div class="specs-list">
+    <div class="spec-row"><span class="sk">TABLERO</span><span class="sv">10 × 10 casillas (100 celdas)</span></div>
+    <div class="spec-row"><span class="sk">BARCOS</span><span class="sv">5 embarcaciones · 17 casillas</span></div>
+    <div class="spec-row"><span class="sk">OBJETIVO</span><span class="sv">Hundir toda la flota enemiga</span></div>
+    <div class="spec-row"><span class="sk">ACIERTO</span><span class="sv">Turno extra para el atacante</span></div>
+    <div class="spec-row"><span class="sk">FALLO</span><span class="sv">Turno pasa al rival</span></div>
+    <div class="spec-row"><span class="sk">IA</span><span class="sv">Modo Caza + Persecución activa</span></div>
+    <div class="spec-row"><span class="sk">2 JUGADORES</span><span class="sv">Pass &amp; Play · pantalla oculta</span></div>
+    <div class="spec-row"><span class="sk">TECH</span><span class="sv">Vanilla JS · Sin librerías · Offline</span></div>
+  </div>
+</template>
+
+<template id="tpl-controls">
+  <div class="info-head"><span class="info-dot cyan"></span>CONTROLES</div>
+  <div class="ctrl-section">POSICIONAMIENTO</div>
+  <div class="ctrl-row"><kbd>Clic</kbd> en barco<span>Seleccionar embarcación</span></div>
+  <div class="ctrl-row"><kbd>Clic</kbd> en tablero<span>Colocar barco seleccionado</span></div>
+  <div class="ctrl-row"><kbd>R</kbd><span>Rotar barco (horizontal ↔ vertical)</span></div>
+  <div class="ctrl-row"><kbd>⚄ Aleatorio</kbd><span>Posicionamiento automático</span></div>
+  <div class="ctrl-row"><kbd>✕ Limpiar</kbd><span>Retirar todos los barcos</span></div>
+  <div class="ctrl-section" style="margin-top:.8rem">COMBATE</div>
+  <div class="ctrl-row"><kbd>Clic</kbd> en radar<span>Disparar a coordenada</span></div>
+  <div class="ctrl-row"><span class="ldot hit"></span><span><b style="color:var(--orange)">Naranja</b> = Impacto directo</span></div>
+  <div class="ctrl-row"><span class="ldot miss"></span><span><b style="color:var(--cyan)">Azul</b> = Agua · disparo fallado</span></div>
+  <div class="ctrl-row"><span class="ldot sunk"></span><span><b style="color:var(--red)">Rojo</b> = Barco hundido</span></div>
+</template>
+
+<template id="tpl-fleet">
+  <div class="info-head"><span class="info-dot orange"></span>FLOTA DE COMBATE</div>
+  <table class="fleet-table">
+    <thead><tr><th>EMBARCACIÓN</th><th>VISUAL</th><th>CELDAS</th></tr></thead>
+    <tbody>
+      <tr><td>Portaaviones</td><td><div class="ft-ship s5"></div></td><td>5</td></tr>
+      <tr><td>Acorazado</td>  <td><div class="ft-ship s4"></div></td><td>4</td></tr>
+      <tr><td>Crucero</td>    <td><div class="ft-ship s3"></div></td><td>3</td></tr>
+      <tr><td>Submarino</td>  <td><div class="ft-ship s3 alt"></div></td><td>3</td></tr>
+      <tr><td>Destructor</td> <td><div class="ft-ship s2"></div></td><td>2</td></tr>
+    </tbody>
+  </table>
+</template>
+
+<template id="tpl-preview">
+  <div class="info-head"><span class="info-dot"></span>VISTA DE FLOTA</div>
+  <div class="fleet-preview" style="border:none;background:none;padding:0">
+    <div class="fp-row"><div class="fp-ship s5"></div><span class="fp-name">Portaaviones <em>×5</em></span></div>
+    <div class="fp-row"><div class="fp-ship s4"></div><span class="fp-name">Acorazado <em>×4</em></span></div>
+    <div class="fp-row"><div class="fp-ship s3"></div><span class="fp-name">Crucero <em>×3</em></span></div>
+    <div class="fp-row"><div class="fp-ship s3 alt"></div><span class="fp-name">Submarino <em>×3</em></span></div>
+    <div class="fp-row"><div class="fp-ship s2"></div><span class="fp-name">Destructor <em>×2</em></span></div>
+  </div>
+</template>
 
 
 <!-- ══════════════ NOMBRES (2P) ══════════════ -->
@@ -349,6 +370,10 @@
   </div>
 </section>
 
+
+<!-- Música de fondo -->
+<audio id="bg-music" src="melodia/Pressure_Hull.mp3" loop preload="auto"></audio>
+<button id="btn-music" class="btn-music" title="Música" aria-label="Alternar música">🔊</button>
 
 <!-- Toasts -->
 <div id="toast-container" aria-live="polite"></div>
