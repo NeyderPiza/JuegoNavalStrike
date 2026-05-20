@@ -830,23 +830,16 @@ function endGame(winner) {
       sunk:   G.stats[1].sunk,
     });
   } else {
+    /* 2P: Save only the winner's record */
     saveScore({
       date:   Date.now(),
       mode:   G.mode,
-      result: winner === 1 ? 'win' : 'loss',
-      winner: 1,
-      hits:   G.stats[1].hits,
-      misses: G.stats[1].misses,
-      sunk:   G.stats[1].sunk,
-    });
-    saveScore({
-      date:   Date.now(),
-      mode:   G.mode,
-      result: winner === 2 ? 'win' : 'loss',
-      winner: 2,
-      hits:   G.stats[2].hits,
-      misses: G.stats[2].misses,
-      sunk:   G.stats[2].sunk,
+      result: 'win',
+      winner,
+      winnerName: G.names[winner],
+      hits:   G.stats[winner].hits,
+      misses: G.stats[winner].misses,
+      sunk:   G.stats[winner].sunk,
     });
   }
 
@@ -1170,7 +1163,13 @@ function renderScoresHTML() {
   if (!list.length) {
     return '<p style="color:var(--muted-b);text-align:center;padding:1rem;font-size:.8rem">Aún no hay partidas registradas.</p>';
   }
-  const rows = list.map((s, i) => {
+  /* Sort by result: wins first, then losses */
+  const sorted = [...list].sort((a, b) => {
+    if (a.result === 'win' && b.result !== 'win') return -1;
+    if (a.result !== 'win' && b.result === 'win') return 1;
+    return 0;
+  });
+  const rows = sorted.map((s, i) => {
     const d    = new Date(s.date);
     const fecha = d.toLocaleDateString('es', { day:'2-digit', month:'2-digit', year:'2-digit' });
     const hora  = d.toLocaleTimeString('es', { hour:'2-digit', minute:'2-digit' });
@@ -1180,7 +1179,7 @@ function renderScoresHTML() {
       : '<span style="color:var(--red)">DERROTA</span>';
     const stats = s.mode === '1p'
       ? `<span title="Impactos">${s.hits}💥</span> <span title="Fallos">${s.misses}💧</span> <span title="Hundidos">${s.sunk}🚢</span>`
-      : `J${s.winner} gana`;
+      : `${s.winnerName || `J${s.winner}`} gana`;
     return `<tr class="${i % 2 === 0 ? 'sc-row-even' : ''}">
       <td class="sc-rank">#${i + 1}</td>
       <td>${fecha}<br/><span style="color:var(--muted);font-size:.6rem">${hora}</span></td>
