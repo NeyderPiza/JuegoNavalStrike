@@ -21,6 +21,7 @@ const V = { WATER: 0, SHIP: 1, MISS: -1, HIT: -2, SUNK: -3 };
 const G = {
   mode:      null,    // '1p' | '2p'
   phase:     'menu',  // menu | placement | handoff | battle | gameover
+  names:     { 1: 'Jugador 1', 2: 'Jugador 2' }, // player names
 
   /* Placement */
   placing:   1,             // player being placed (1 or 2)
@@ -246,9 +247,9 @@ function initPlacement(player) {
   G.vertical = false;
 
   $('placement-title').textContent =
-    G.mode === '2p' ? `POSICIONAR FLOTA — JUGADOR ${player}` : 'POSICIONAR FLOTA';
+    G.mode === '2p' ? `POSICIONAR FLOTA — ${G.names[player]}` : 'POSICIONAR FLOTA';
   $('placement-player-badge').textContent =
-    G.mode === '2p' ? `JUGADOR ${player}` : 'TU FLOTA';
+    G.mode === '2p' ? G.names[player] : 'TU FLOTA';
   $('orient-badge').textContent  = '→ HORIZONTAL';
   $('rotate-icon').textContent   = '↻';
   $('hint-text').textContent     = 'Selecciona un barco y haz clic en el tablero';
@@ -452,8 +453,8 @@ function fullRefreshBattleView() {
     screen.classList.toggle('p2-turn', atk === 2);
 
     /* Labels: enemy panel = DEFENDER, own panel = ATTACKER */
-    const atkName = `JUGADOR ${atk}`;
-    const defName = `JUGADOR ${def}`;
+    const atkName = G.names[atk];
+    const defName = G.names[def];
     $('enemy-panel-icon').textContent = '⊕';
     $('enemy-panel-title').textContent = defName;
     $('enemy-panel-sub').textContent   = `← Disparar aquí`;
@@ -488,7 +489,7 @@ function markTrackerSunk(containerId, shipId) {
 
 function updateTurnDOM() {
   const name = G.mode === '2p'
-    ? `JUGADOR ${G.attacker}`
+    ? G.names[G.attacker]
     : (G.attacker === 1 ? 'JUGADOR' : 'IA');
   $('turn-player-name').textContent = name;
 }
@@ -709,7 +710,7 @@ function queueCell(r, c, prepend) {
 function showTurnBanner(onDone) {
   const atk    = G.attacker;
   const banner = document.getElementById('turn-banner');
-  document.getElementById('turn-banner-player').textContent  = `JUGADOR ${atk}`;
+  document.getElementById('turn-banner-player').textContent  = G.names[atk];
   document.getElementById('turn-banner-emblem').textContent  = atk === 1 ? '⚔️' : '🛡️';
 
   banner.classList.remove('hide');
@@ -734,24 +735,24 @@ function showHandoff(action = 'battle') {
     nextPlayer = 2;
     eyebrow    = 'POSICIONAMIENTO —';
     shield     = '⚓';
-    desc       = `El <strong>Jugador 1</strong> ya colocó su flota.<br/>
-                  Pulsa cuando el <strong>Jugador 2</strong> esté listo para posicionar.`;
+    desc       = `El <strong>${G.names[1]}</strong> ya colocó su flota.<br/>
+                  Pulsa cuando <strong>${G.names[2]}</strong> esté listo para posicionar.`;
     btnLabel   = 'POSICIONAR MI FLOTA';
-    btnSub     = 'Jugador 2 · Colocar barcos';
+    btnSub     = `${G.names[2]} · Colocar barcos`;
   } else {
     nextPlayer = G.attacker;
     const prev = nextPlayer === 1 ? 2 : 1;
     eyebrow    = 'TURNO DE';
     shield     = '🛡️';
-    desc       = `El tablero del <strong>Jugador ${prev}</strong> ha sido ocultado.<br/>
-                  Pulsa cuando el Jugador ${nextPlayer} esté listo.`;
+    desc       = `El tablero del <strong>${G.names[prev]}</strong> ha sido ocultado.<br/>
+                  Pulsa cuando <strong>${G.names[nextPlayer]}</strong> esté listo.`;
     btnLabel   = 'ESTOY LISTO';
     btnSub     = 'Continuar al juego';
   }
 
   $('handoff-shield').textContent        = shield;
   $('handoff-eyebrow').textContent       = eyebrow;
-  $('handoff-player-name').textContent   = `JUGADOR ${nextPlayer}`;
+  $('handoff-player-name').textContent   = G.names[nextPlayer];
   $('handoff-desc').innerHTML            = desc;
   $('handoff-btn-label').textContent     = btnLabel;
   $('handoff-btn-sub').textContent       = btnSub;
@@ -766,12 +767,12 @@ function endGame(winner) {
   const eyebrow = isWin ? '— VICTORIA —' : '— DERROTA —';
   const title  = is1P
     ? (isWin ? '¡Misión Cumplida!' : 'Misión Fallida')
-    : `¡Jugador ${winner} Gana!`;
+    : `¡${G.names[winner]} Gana!`;
   const desc   = is1P
     ? (isWin
         ? 'Has hundido toda la flota enemiga. ¡Excelente táctica!'
         : 'La IA ha hundido tu flota. Inténtalo de nuevo.')
-    : `El Jugador ${winner} ha hundido toda la flota enemiga.`;
+    : `${G.names[winner]} ha hundido toda la flota enemiga.`;
 
   $('go-emblem').textContent  = emblem;
   $('go-eyebrow').textContent = eyebrow;
@@ -805,8 +806,8 @@ function endGame(winner) {
   });
 
   /* ── Populate end-game boards ── */
-  const leftLabel  = is1P ? 'Flota Enemiga (IA)' : `Jugador ${winner === 2 ? '2 🏆' : '2'}`;
-  const rightLabel = is1P ? 'Tu Flota'           : `Jugador ${winner === 1 ? '1 🏆' : '1'}`;
+  const leftLabel  = is1P ? 'Flota Enemiga (IA)' : `${G.names[2]}${winner === 2 ? ' 🏆' : ''}`;
+  const rightLabel = is1P ? 'Tu Flota'           : `${G.names[1]}${winner === 1 ? ' 🏆' : ''}`;
   $('go-board-1-title').textContent = leftLabel;
   $('go-board-2-title').textContent = rightLabel;
 
@@ -874,6 +875,18 @@ document.addEventListener('DOMContentLoaded', () => {
   $('btn-2p').addEventListener('click', () => {
     fullReset();
     G.mode = '2p';
+    showScreen('screen-names');
+    $('player1-name').value = '';
+    $('player2-name').value = '';
+    $('player1-name').focus();
+  });
+
+  /* ── NAMES (2P) ── */
+  $('btn-names-continue').addEventListener('click', () => {
+    const p1 = $('player1-name').value.trim() || 'Jugador 1';
+    const p2 = $('player2-name').value.trim() || 'Jugador 2';
+    G.names[1] = p1;
+    G.names[2] = p2;
     initPlacement(1);
   });
 
@@ -1000,7 +1013,7 @@ document.addEventListener('DOMContentLoaded', () => {
       fullRefreshBattleView();
       updateTurnDOM();
       setActiveBattleTab('enemy');
-      setLog(`Turno de Jugador ${G.attacker} — Haz clic para disparar`);
+      setLog(`Turno de ${G.names[G.attacker]} — Haz clic para disparar`);
       showScreen('screen-battle');
     }
   });
