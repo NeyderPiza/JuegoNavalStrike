@@ -278,7 +278,16 @@ function renderShipList() {
       <span class="si-name">${def.name}</span>
       ${placed ? '<span class="si-check">✓</span>' : ''}`;
 
-    if (!placed) li.addEventListener('click', () => selectShip(def));
+    if (!placed) {
+      li.addEventListener('click', () => selectShip(def));
+    } else {
+      li.style.cursor = 'pointer';
+      li.title = 'Clic para mover o quitar';
+      li.addEventListener('click', () => {
+        const idx = G.placed[G.placing].findIndex(s => s.id === def.id);
+        if (idx !== -1) selectShipForEdit(idx);
+      });
+    }
     frag.appendChild(li);
   }
   ul.appendChild(frag);
@@ -336,12 +345,35 @@ function clearHover() {
 
 function selectShipForEdit(shipIndex) {
   G.editingShip = shipIndex;
+  G.selShip = null;
+  document.querySelectorAll('.ship-item').forEach(li => li.classList.remove('selected'));
   const ship = G.placed[G.placing][shipIndex];
   G.vertical = ship.vertical;
   $('rotate-icon').textContent  = G.vertical ? '↺' : '↻';
   $('orient-badge').textContent = G.vertical ? '↑ VERTICAL' : '→ HORIZONTAL';
-  $('hint-text').textContent = 'Editando: ' + ship.name + ' — Haz clic para mover o Eliminar para cancelar';
+  $('hint-text').textContent = 'Editando: ' + ship.name + ' — Haz clic para mover';
+  $('btn-remove-ship').style.display = '';
   redrawPlacement();
+}
+
+function removeEditingShip() {
+  if (G.editingShip === null) return;
+  G.placed[G.placing].splice(G.editingShip, 1);
+  G.editingShip = null;
+  $('btn-remove-ship').style.display = 'none';
+  $('hint-text').textContent = 'Selecciona un barco y haz clic en el tablero';
+  redrawPlacement();
+  renderShipList();
+  updateReadyBtn();
+  clearHover();
+}
+
+function exitEditMode() {
+  G.editingShip = null;
+  $('btn-remove-ship').style.display = 'none';
+  $('hint-text').textContent = 'Selecciona un barco y haz clic en el tablero';
+  redrawPlacement();
+  clearHover();
 }
 
 function previewPlacement(r, c) {
@@ -384,6 +416,7 @@ function placeShip(r, c) {
     
     G.placed[G.placing][G.editingShip] = newShip;
     G.editingShip = null;
+    $('btn-remove-ship').style.display = 'none';
     $('hint-text').textContent = 'Selecciona un barco y haz clic en el tablero';
     redrawPlacement();
     clearHover();
@@ -943,6 +976,8 @@ document.addEventListener('DOMContentLoaded', () => {
   $('btn-random').addEventListener('click', () => {
     G.placed[G.placing] = randomPlacement();
     G.selShip = null;
+    G.editingShip = null;
+    $('btn-remove-ship').style.display = 'none';
     document.querySelectorAll('.ship-item').forEach(li => li.classList.remove('selected'));
     $('hint-text').textContent = 'Posición aleatoria aplicada.';
     redrawPlacement();
@@ -954,6 +989,8 @@ document.addEventListener('DOMContentLoaded', () => {
   $('btn-clear').addEventListener('click', () => {
     G.placed[G.placing] = [];
     G.selShip = null;
+    G.editingShip = null;
+    $('btn-remove-ship').style.display = 'none';
     document.querySelectorAll('.ship-item').forEach(li => li.classList.remove('selected'));
     $('hint-text').textContent = 'Tablero limpio. Selecciona un barco para empezar.';
     redrawPlacement();
@@ -961,6 +998,8 @@ document.addEventListener('DOMContentLoaded', () => {
     updateReadyBtn();
     clearHover();
   });
+
+  $('btn-remove-ship').addEventListener('click', () => removeEditingShip());
 
   /* Hover preview */
   $('placement-board').addEventListener('mousemove', e => {
@@ -988,11 +1027,7 @@ document.addEventListener('DOMContentLoaded', () => {
         /* Try to place/move ship */
         placeShip(+c.dataset.row, +c.dataset.col);
       } else {
-        /* No selection, deselect any editing */
-        G.editingShip = null;
-        $('hint-text').textContent = 'Selecciona un barco y haz clic en el tablero';
-        redrawPlacement();
-        clearHover();
+        exitEditMode();
       }
     }
   });
@@ -1015,17 +1050,15 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (e.key === 'a' || e.key === 'A') {
       e.preventDefault();
       $('btn-random').click();
-    } else if (e.key === 'Delete') {
+    } else if (e.key === 'Delete' || e.key === 'Backspace') {
       e.preventDefault();
-      /* Cancel edit or clear all */
       if (G.editingShip !== null) {
-        G.editingShip = null;
-        $('hint-text').textContent = 'Selecciona un barco y haz clic en el tablero';
-        redrawPlacement();
-        clearHover();
+        removeEditingShip();
       } else {
         $('btn-clear').click();
       }
+    } else if (e.key === 'Escape') {
+      if (G.editingShip !== null) exitEditMode();
     }
   });
 
