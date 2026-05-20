@@ -33,7 +33,7 @@ const G = {
   /* Battle */
   attacker:  1,             // current attacker
   boards:    { 1: null, 2: null }, // Board instances
-  stats:     { hits: 0, misses: 0, sunk: 0 },
+  stats:     { 1: { hits: 0, misses: 0, sunk: 0 }, 2: { hits: 0, misses: 0, sunk: 0 } },
   locked:    false,         // block input during AI turn
 
   /* AI */
@@ -412,7 +412,7 @@ function updateReadyBtn() {
 /* ── BATTLE INIT ─────────────────────────────────────────────────── */
 function startBattle() {
   G.attacker  = 1;
-  G.stats     = { hits: 0, misses: 0, sunk: 0 };
+  G.stats     = { 1: { hits: 0, misses: 0, sunk: 0 }, 2: { hits: 0, misses: 0, sunk: 0 } };
   G.locked    = false;
   G.boards[1] = new Board(G.placed[1]);
   G.boards[2] = new Board(G.placed[2]);
@@ -495,9 +495,10 @@ function updateTurnDOM() {
 }
 
 function updateScoreDOM() {
-  $('stat-hits').textContent   = G.stats.hits;
-  $('stat-misses').textContent = G.stats.misses;
-  $('stat-sunk').textContent   = G.stats.sunk;
+  const playerStats = G.mode === '1p' ? G.stats[1] : G.stats[G.attacker];
+  $('stat-hits').textContent   = playerStats.hits;
+  $('stat-misses').textContent = playerStats.misses;
+  $('stat-sunk').textContent   = playerStats.sunk;
 }
 
 /* ── FIRE / SHOOT ────────────────────────────────────────────────── */
@@ -528,11 +529,12 @@ function processShot(res, row, col, board, boardId, trackerId) {
         setCellState(boardId, r, c, 'sunk');
       markTrackerSunk(trackerId, sunkShip.id);
     }
-    if (G.mode === '1p') { G.stats.hits++; G.stats.sunk++ }
+    G.stats[G.attacker].hits++;
+    G.stats[G.attacker].sunk++;
   } else if (res === 'hit') {
-    if (G.mode === '1p') G.stats.hits++;
+    G.stats[G.attacker].hits++;
   } else {
-    if (G.mode === '1p') G.stats.misses++;
+    G.stats[G.attacker].misses++;
   }
 
   /* Update alive badges */
@@ -577,6 +579,7 @@ function processShot(res, row, col, board, boardId, trackerId) {
       setTimeout(() => showTurnBanner(() => {
         fullRefreshBattleView();
         updateTurnDOM();
+        updateScoreDOM();
         setActiveBattleTab('enemy');
       }), 650);
     } else if (!wasAI) {
@@ -783,27 +786,69 @@ function endGame(winner) {
   const statsEl = $('go-stats');
   statsEl.innerHTML = '';
   if (is1P) {
+    const stats1P = G.stats[1];
     [
-      { v: G.stats.hits,   l: 'IMPACTOS' },
-      { v: G.stats.misses, l: 'FALLOS' },
-      { v: G.stats.sunk,   l: 'HUNDIDOS' },
+      { v: stats1P.hits,   l: 'IMPACTOS' },
+      { v: stats1P.misses, l: 'FALLOS' },
+      { v: stats1P.sunk,   l: 'HUNDIDOS' },
     ].forEach(({ v, l }) => {
       const d = el('div', 'gos-item');
       d.innerHTML = `<div class="gos-val">${v}</div><div class="gos-lbl">${l}</div>`;
       statsEl.appendChild(d);
     });
+  } else {
+    /* 2P: Show stats for both players */
+    const stats1 = G.stats[1];
+    const stats2 = G.stats[2];
+    const div1 = el('div', 'go-stats-player');
+    div1.innerHTML = `<div class="gos-player-name">${G.names[1]}</div>
+      <div class="gos-items">
+        <div class="gos-item"><div class="gos-val">${stats1.hits}</div><div class="gos-lbl">IMPACTOS</div></div>
+        <div class="gos-item"><div class="gos-val">${stats1.misses}</div><div class="gos-lbl">FALLOS</div></div>
+        <div class="gos-item"><div class="gos-val">${stats1.sunk}</div><div class="gos-lbl">HUNDIDOS</div></div>
+      </div>`;
+    statsEl.appendChild(div1);
+    const div2 = el('div', 'go-stats-player');
+    div2.innerHTML = `<div class="gos-player-name">${G.names[2]}</div>
+      <div class="gos-items">
+        <div class="gos-item"><div class="gos-val">${stats2.hits}</div><div class="gos-lbl">IMPACTOS</div></div>
+        <div class="gos-item"><div class="gos-val">${stats2.misses}</div><div class="gos-lbl">FALLOS</div></div>
+        <div class="gos-item"><div class="gos-val">${stats2.sunk}</div><div class="gos-lbl">HUNDIDOS</div></div>
+      </div>`;
+    statsEl.appendChild(div2);
   }
 
   /* ── Save score ── */
-  saveScore({
-    date:   Date.now(),
-    mode:   G.mode,
-    result: isWin ? 'win' : 'loss',
-    winner,
-    hits:   G.stats.hits,
-    misses: G.stats.misses,
-    sunk:   G.stats.sunk,
-  });
+  if (is1P) {
+    saveScore({
+      date:   Date.now(),
+      mode:   G.mode,
+      result: isWin ? 'win' : 'loss',
+      winner,
+      hits:   G.stats[1].hits,
+      misses: G.stats[1].misses,
+      sunk:   G.stats[1].sunk,
+    });
+  } else {
+    saveScore({
+      date:   Date.now(),
+      mode:   G.mode,
+      result: winner === 1 ? 'win' : 'loss',
+      winner: 1,
+      hits:   G.stats[1].hits,
+      misses: G.stats[1].misses,
+      sunk:   G.stats[1].sunk,
+    });
+    saveScore({
+      date:   Date.now(),
+      mode:   G.mode,
+      result: winner === 2 ? 'win' : 'loss',
+      winner: 2,
+      hits:   G.stats[2].hits,
+      misses: G.stats[2].misses,
+      sunk:   G.stats[2].sunk,
+    });
+  }
 
   /* ── Populate end-game boards ── */
   const leftLabel  = is1P ? 'Flota Enemiga (IA)' : `${G.names[2]}${winner === 2 ? ' 🏆' : ''}`;

@@ -1072,10 +1072,26 @@ kbd {
   background: var(--c-surface);
   border: 1px solid var(--b-faint); border-radius: 8px;
   flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 .gos-item { display: flex; flex-direction: column; align-items: center; gap: .1rem }
 .gos-val { font-family: var(--font-hud); font-size: 1.3rem; font-weight: 900; color: var(--cyan); }
 .gos-lbl { font-family: var(--font-hud); font-size: .45rem; letter-spacing: .2em; color: var(--muted); }
+
+/* 2P Stats Display */
+.go-stats-player {
+  display: flex; flex-direction: column; align-items: center; gap: .4rem;
+  padding: .6rem .8rem; background: rgba(0,212,245,.05);
+  border: 1px solid var(--b-soft); border-radius: 6px;
+}
+.gos-player-name {
+  font-family: var(--font-hud); font-size: .65rem; letter-spacing: .15em;
+  color: var(--cyan); font-weight: 700; text-transform: uppercase;
+}
+.gos-items {
+  display: flex; gap: .6rem;
+}
 
 /* ── Boards side by side ── */
 .go-boards-container {
