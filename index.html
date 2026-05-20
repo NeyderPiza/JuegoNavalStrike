@@ -212,14 +212,14 @@
 <!-- ══════════════ HANDOFF (2P) ══════════════ -->
 <section id="screen-handoff" class="screen">
   <div class="handoff-wrap">
-    <div class="handoff-shield">🛡️</div>
-    <div class="handoff-eyebrow">PASA EL DISPOSITIVO A</div>
+    <div class="handoff-shield" id="handoff-shield">🛡️</div>
+    <div class="handoff-eyebrow" id="handoff-eyebrow">TURNO DE</div>
     <h2 class="handoff-name" id="handoff-player-name">JUGADOR 2</h2>
     <p class="handoff-desc" id="handoff-desc">El tablero anterior ha sido ocultado.<br/>Pulsa cuando estés listo.</p>
     <div class="handoff-warn">⚠ No mires la pantalla del rival</div>
     <button class="btn-play" id="btn-handoff-ready">
       <span class="bp-icon">◈</span>
-      <span class="bp-body"><strong>ESTOY LISTO</strong><small>Continuar al juego</small></span>
+      <span class="bp-body"><strong id="handoff-btn-label">ESTOY LISTO</strong><small id="handoff-btn-sub">Continuar al juego</small></span>
       <span class="bp-arrow">›</span>
     </button>
   </div>
@@ -256,8 +256,8 @@
     <div class="arena-panel" id="container-enemy">
       <div class="ap-head">
         <div class="ap-head-l">
-          <span class="ap-icon enemy-icon">⊕</span>
-          <div><div class="ap-title">RADAR ENEMIGO</div><div class="ap-sub">Clic para disparar</div></div>
+          <span class="ap-icon enemy-icon" id="enemy-panel-icon">⊕</span>
+          <div><div class="ap-title" id="enemy-panel-title">RADAR ENEMIGO</div><div class="ap-sub" id="enemy-panel-sub">Clic para disparar</div></div>
         </div>
         <div class="ap-badge enemy-badge"><span id="enemy-ships-left">5</span> activos</div>
       </div>
@@ -284,8 +284,8 @@
     <div class="arena-panel" id="container-own">
       <div class="ap-head">
         <div class="ap-head-l">
-          <span class="ap-icon own-icon">◉</span>
-          <div><div class="ap-title">MI FLOTA</div><div class="ap-sub">Zona de defensa</div></div>
+          <span class="ap-icon own-icon" id="own-panel-icon">◉</span>
+          <div><div class="ap-title" id="own-panel-title">MI FLOTA</div><div class="ap-sub" id="own-panel-sub">Zona de defensa</div></div>
         </div>
         <div class="ap-badge own-badge"><span id="own-ships-left">5</span> activos</div>
       </div>
@@ -389,6 +389,29 @@
 <!-- Música de fondo -->
 <audio id="bg-music" src="melodia/Pressure_Hull.mp3" loop preload="auto"></audio>
 <button id="btn-music" class="btn-music" title="Música" aria-label="Alternar música">🔊</button>
+
+<!-- Turn banner 2P -->
+<div id="turn-banner" class="turn-banner">
+  <div class="turn-banner-card">
+    <div class="turn-banner-emblem" id="turn-banner-emblem">⚔️</div>
+    <div class="turn-banner-player" id="turn-banner-player">JUGADOR 1</div>
+    <div class="turn-banner-sub">ES TU TURNO — ¡ATACA!</div>
+    <div class="turn-banner-bar"><div class="turn-banner-progress"></div></div>
+  </div>
+</div>
+
+<!-- Modal de confirmación custom -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-modal">
+    <div class="confirm-icon" id="confirm-icon">⚑</div>
+    <div class="confirm-title" id="confirm-title">¿RENDIRSE?</div>
+    <p class="confirm-desc" id="confirm-desc">Perderás la partida. Esta acción no se puede deshacer.</p>
+    <div class="confirm-actions">
+      <button class="confirm-btn-ok"     id="confirm-ok">CONFIRMAR</button>
+      <button class="confirm-btn-cancel" id="confirm-cancel">CANCELAR</button>
+    </div>
+  </div>
+</div>
 
 <!-- Toasts -->
 <div id="toast-container" aria-live="polite"></div>

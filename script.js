@@ -432,17 +432,41 @@ function startBattle() {
  * Used when returning from handoff or on battle init.
  */
 function fullRefreshBattleView() {
-  const atk = G.attacker;
-  const def = atk === 1 ? 2 : 1;
+  const atk  = G.attacker;
+  const def  = atk === 1 ? 2 : 1;
+  const is2P = G.mode === '2p';
 
-  renderBoard(G.boards[def], 'enemy-board', true);  // enemy = hide ships
-  renderBoard(G.boards[atk], 'own-board',   false); // own   = show ships
+  renderBoard(G.boards[def], 'enemy-board', true);   // attacker's target: always hide ships
+  renderBoard(G.boards[atk], 'own-board',   is2P);   // own board: hide ships in 2P
 
   buildFleetTracker('enemy-fleet-tracker', G.boards[def]);
   buildFleetTracker('own-fleet-tracker',   G.boards[atk]);
 
   $('enemy-ships-left').textContent = G.boards[def].aliveCount();
   $('own-ships-left').textContent   = G.boards[atk].aliveCount();
+
+  /* 2P: fixed visual positions + labels */
+  const screen = $('screen-battle');
+  if (is2P) {
+    screen.classList.toggle('p1-turn', atk === 1);
+    screen.classList.toggle('p2-turn', atk === 2);
+
+    /* Labels: enemy panel = DEFENDER, own panel = ATTACKER */
+    const atkName = `JUGADOR ${atk}`;
+    const defName = `JUGADOR ${def}`;
+    $('enemy-panel-icon').textContent = '⊕';
+    $('enemy-panel-title').textContent = defName;
+    $('enemy-panel-sub').textContent   = `← Disparar aquí`;
+    $('own-panel-icon').textContent    = '◉';
+    $('own-panel-title').textContent   = atkName;
+    $('own-panel-sub').textContent     = 'Zona de defensa';
+  } else {
+    screen.classList.remove('p1-turn', 'p2-turn');
+    $('enemy-panel-title').textContent = 'RADAR ENEMIGO';
+    $('enemy-panel-sub').textContent   = 'Clic para disparar';
+    $('own-panel-title').textContent   = 'MI FLOTA';
+    $('own-panel-sub').textContent     = 'Zona de defensa';
+  }
 }
 
 function buildFleetTracker(containerId, board) {
@@ -549,7 +573,11 @@ function processShot(res, row, col, board, boardId, trackerId) {
     G.attacker = G.attacker === 1 ? 2 : 1;
     updateTurnDOM();
     if (G.mode === '2p') {
-      setTimeout(() => showHandoff(), 650);
+      setTimeout(() => showTurnBanner(() => {
+        fullRefreshBattleView();
+        updateTurnDOM();
+        setActiveBattleTab('enemy');
+      }), 650);
     } else if (!wasAI) {
       /* 1P: Only AI takes its turn if the PLAYER missed */
       G.locked = true;
@@ -677,15 +705,56 @@ function queueCell(r, c, prepend) {
   prepend ? G.ai.queue.unshift([r, c]) : G.ai.queue.push([r, c]);
 }
 
-/* ── HANDOFF (2P) ────────────────────────────────────────────────── */
+/* ── TURN BANNER (reemplaza handoff en batalla 2P) ──────────────── */
+function showTurnBanner(onDone) {
+  const atk    = G.attacker;
+  const banner = document.getElementById('turn-banner');
+  document.getElementById('turn-banner-player').textContent  = `JUGADOR ${atk}`;
+  document.getElementById('turn-banner-emblem').textContent  = atk === 1 ? '⚔️' : '🛡️';
+
+  banner.classList.remove('hide');
+  banner.classList.add('show');
+
+  setTimeout(() => {
+    banner.classList.add('hide');
+    banner.addEventListener('animationend', function handler() {
+      banner.classList.remove('show', 'hide');
+      banner.removeEventListener('animationend', handler);
+      onDone();
+    });
+  }, 1600);
+}
+
+/* ── HANDOFF (2P) — solo para posicionamiento ───────────────────── */
 function showHandoff(action = 'battle') {
   G.nextHandoffAction = action;
-  const next = G.attacker;
-  const prev = next === 1 ? 2 : 1;
-  $('handoff-player-name').textContent = `JUGADOR ${next}`;
-  $('handoff-desc').innerHTML =
-    `El tablero del <strong>Jugador ${prev}</strong> ha sido ocultado.<br/>
-     Pulsa cuando el Jugador ${next} esté listo.`;
+
+  let nextPlayer, eyebrow, shield, desc, btnLabel, btnSub;
+  if (action === 'placement2') {
+    nextPlayer = 2;
+    eyebrow    = 'POSICIONAMIENTO —';
+    shield     = '⚓';
+    desc       = `El <strong>Jugador 1</strong> ya colocó su flota.<br/>
+                  Pulsa cuando el <strong>Jugador 2</strong> esté listo para posicionar.`;
+    btnLabel   = 'POSICIONAR MI FLOTA';
+    btnSub     = 'Jugador 2 · Colocar barcos';
+  } else {
+    nextPlayer = G.attacker;
+    const prev = nextPlayer === 1 ? 2 : 1;
+    eyebrow    = 'TURNO DE';
+    shield     = '🛡️';
+    desc       = `El tablero del <strong>Jugador ${prev}</strong> ha sido ocultado.<br/>
+                  Pulsa cuando el Jugador ${nextPlayer} esté listo.`;
+    btnLabel   = 'ESTOY LISTO';
+    btnSub     = 'Continuar al juego';
+  }
+
+  $('handoff-shield').textContent        = shield;
+  $('handoff-eyebrow').textContent       = eyebrow;
+  $('handoff-player-name').textContent   = `JUGADOR ${nextPlayer}`;
+  $('handoff-desc').innerHTML            = desc;
+  $('handoff-btn-label').textContent     = btnLabel;
+  $('handoff-btn-sub').textContent       = btnSub;
   showScreen('screen-handoff');
 }
 
@@ -966,8 +1035,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ── SURRENDER ── */
   $('btn-surrender').addEventListener('click', () => {
-    if (!confirm('¿Seguro que quieres rendirte? Perderás la partida.')) return;
-    endGame(G.attacker === 1 ? 2 : 1);
+    showConfirm({
+      icon:    '⚑',
+      title:   '¿RENDIRSE?',
+      desc:    'Perderás la partida. Esta acción no se puede deshacer.',
+      okLabel: 'RENDIRSE',
+      onOk:    () => endGame(G.attacker === 1 ? 2 : 1),
+    });
   });
 
   /* ── GAME OVER ── */
@@ -987,6 +1061,36 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── INIT ── */
   showScreen('screen-menu');
 });
+
+/* ── CUSTOM CONFIRM ─────────────────────────────────────────────── */
+function showConfirm({ icon = '⚑', title, desc, okLabel = 'CONFIRMAR', onOk }) {
+  const overlay = document.getElementById('confirm-overlay');
+  document.getElementById('confirm-icon').textContent  = icon;
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-desc').textContent  = desc;
+  document.getElementById('confirm-ok').textContent    = okLabel;
+
+  overlay.classList.add('open');
+
+  function close() { overlay.classList.remove('open'); }
+
+  const okBtn     = document.getElementById('confirm-ok');
+  const cancelBtn = document.getElementById('confirm-cancel');
+
+  const handleOk = () => { close(); cleanup(); onOk(); };
+  const handleCancel = () => { close(); cleanup(); };
+  const handleKey = (e) => { if (e.key === 'Escape') handleCancel(); };
+
+  function cleanup() {
+    okBtn.removeEventListener('click', handleOk);
+    cancelBtn.removeEventListener('click', handleCancel);
+    document.removeEventListener('keydown', handleKey);
+  }
+
+  okBtn.addEventListener('click', handleOk);
+  cancelBtn.addEventListener('click', handleCancel);
+  document.addEventListener('keydown', handleKey);
+}
 
 /* ── SCORES ─────────────────────────────────────────────────────── */
 const SCORES_KEY = 'navalStrike_scores';
@@ -1050,9 +1154,16 @@ function openScoresModal() {
   const clearBtn = body.querySelector('#btn-clear-scores');
   if (clearBtn) {
     clearBtn.addEventListener('click', () => {
-      if (!confirm('¿Borrar todo el historial de partidas?')) return;
-      localStorage.removeItem(SCORES_KEY);
-      body.innerHTML = `<div class="info-head"><span class="info-dot cyan"></span>PUNTUACIONES</div>` + renderScoresHTML();
+      showConfirm({
+        icon:    '🗑',
+        title:   '¿BORRAR HISTORIAL?',
+        desc:    'Se eliminarán todas las partidas guardadas.',
+        okLabel: 'BORRAR TODO',
+        onOk:    () => {
+          localStorage.removeItem(SCORES_KEY);
+          body.innerHTML = `<div class="info-head"><span class="info-dot cyan"></span>PUNTUACIONES</div>` + renderScoresHTML();
+        },
+      });
     });
   }
 }

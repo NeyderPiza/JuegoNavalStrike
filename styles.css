@@ -887,6 +887,14 @@ kbd {
   display: flex; flex: 1; gap: 1.5rem; padding: 1.2rem;
   align-items: flex-start; justify-content: center; flex-wrap: wrap; overflow: auto;
 }
+/* 2P fixed positions: own=P1 always LEFT, enemy=P2 always RIGHT when P1 attacks */
+#screen-battle.p1-turn  #container-own   { order: 1; }
+#screen-battle.p1-turn  .arena-divider   { order: 2; }
+#screen-battle.p1-turn  #container-enemy { order: 3; }
+/* P2 attacks: enemy=P1 LEFT, own=P2 RIGHT */
+#screen-battle.p2-turn  #container-enemy { order: 1; }
+#screen-battle.p2-turn  .arena-divider   { order: 2; }
+#screen-battle.p2-turn  #container-own   { order: 3; }
 .arena-panel { display: flex; flex-direction: column; gap: .65rem; flex-shrink: 0 }
 .ap-head {
   display: flex; align-items: center; justify-content: space-between;
@@ -1248,6 +1256,83 @@ kbd {
   transition: color .15s;
 }
 .info-modal-close:hover { color: var(--cyan); }
+
+/* ── TURN BANNER (2P) ───────────────────────────────────────────── */
+.turn-banner {
+  display: none; position: fixed; inset: 0; z-index: 9500;
+  align-items: center; justify-content: center;
+  background: rgba(2,11,20,.88); backdrop-filter: blur(6px);
+}
+.turn-banner.show { display: flex; animation: fadeIn .2s ease; }
+.turn-banner.hide { animation: fadeOut .3s ease forwards; }
+@keyframes fadeIn  { from { opacity:0; } to { opacity:1; } }
+@keyframes fadeOut { from { opacity:1; } to { opacity:0; } }
+.turn-banner-card {
+  text-align: center; display: flex; flex-direction: column;
+  align-items: center; gap: .9rem;
+}
+.turn-banner-emblem { font-size: 3.5rem; animation: bounceIn .5s cubic-bezier(.36,.07,.19,.97); }
+.turn-banner-player {
+  font-family: var(--font-hud); font-size: clamp(2rem,6vw,3.5rem);
+  font-weight: 900; letter-spacing: .12em;
+  background: linear-gradient(135deg, var(--cyan), var(--green));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.turn-banner-sub {
+  font-family: var(--font-hud); font-size: .65rem; letter-spacing: .35em;
+  color: var(--muted-b);
+}
+.turn-banner-bar {
+  width: 220px; height: 3px; background: var(--b-faint); border-radius: 2px; overflow: hidden;
+}
+.turn-banner-progress {
+  height: 100%; background: var(--cyan);
+  animation: banner-fill 1.6s linear forwards;
+}
+@keyframes banner-fill { from { width:0%; } to { width:100%; } }
+
+/* ── CONFIRM MODAL ──────────────────────────────────────────────── */
+.confirm-overlay {
+  display: none; position: fixed; inset: 0; z-index: 10000;
+  background: rgba(2,11,20,.75); backdrop-filter: blur(5px);
+  align-items: center; justify-content: center;
+}
+.confirm-overlay.open { display: flex; }
+.confirm-modal {
+  background: var(--c-card);
+  border: 1px solid var(--red);
+  border-radius: 12px;
+  padding: 2rem 2.2rem 1.6rem;
+  width: min(380px, 90vw);
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: .85rem;
+  box-shadow: 0 0 40px rgba(255,45,85,.15), var(--shadow);
+  animation: modal-in .18s ease;
+}
+.confirm-icon { font-size: 2.4rem; }
+.confirm-title {
+  font-family: var(--font-hud); font-size: 1.1rem; font-weight: 900;
+  letter-spacing: .12em; color: var(--red);
+}
+.confirm-desc { font-size: .76rem; color: var(--muted-b); line-height: 1.6; margin: 0; }
+.confirm-actions { display: flex; gap: .7rem; width: 100%; margin-top: .3rem; }
+.confirm-btn-ok {
+  flex: 1; padding: .7rem;
+  background: linear-gradient(135deg, rgba(255,45,85,.18), rgba(200,30,60,.1));
+  border: 1px solid var(--red); border-radius: 8px;
+  color: var(--red); font-family: var(--font-hud);
+  font-size: .72rem; font-weight: 700; letter-spacing: .1em;
+  cursor: pointer; transition: var(--tr);
+}
+.confirm-btn-ok:hover { background: rgba(255,45,85,.28); box-shadow: 0 0 12px rgba(255,45,85,.25); }
+.confirm-btn-cancel {
+  flex: 1; padding: .7rem;
+  background: transparent; border: 1px solid var(--b-soft); border-radius: 8px;
+  color: var(--muted-b); font-family: var(--font-hud);
+  font-size: .72rem; letter-spacing: .1em;
+  cursor: pointer; transition: var(--tr);
+}
+.confirm-btn-cancel:hover { border-color: var(--cyan-d); color: var(--cyan); }
 
 /* ── SCORES TABLE ───────────────────────────────────────────────── */
 .scores-table {
