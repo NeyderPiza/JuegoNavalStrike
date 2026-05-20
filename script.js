@@ -722,7 +722,7 @@ function showTurnBanner(onDone) {
       banner.removeEventListener('animationend', handler);
       onDone();
     });
-  }, 1600);
+  }, 500);
 }
 
 /* ── HANDOFF (2P) — solo para posicionamiento ───────────────────── */

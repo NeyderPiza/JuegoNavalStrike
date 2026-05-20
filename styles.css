@@ -1287,7 +1287,7 @@ kbd {
 }
 .turn-banner-progress {
   height: 100%; background: var(--cyan);
-  animation: banner-fill 1.6s linear forwards;
+  animation: banner-fill 0.5s linear forwards;
 }
 @keyframes banner-fill { from { width:0%; } to { width:100%; } }
 
